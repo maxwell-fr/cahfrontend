@@ -60,7 +60,7 @@ $("#playersIcon").on('click', function(){
 });
 
 $("#nameButton").on('click', function(){
-    localStorage.setItem("cahplayername",$("#playerName").val());
+    localStorage.setItem("cahplayername",$("#playerName").val().trim());
     $("#nameForm").addClass("d-none");
     $("#newGameForm").removeClass("d-none");
     $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
@@ -103,7 +103,7 @@ $("#newGame").on('click', function(){
 
 $("#joinGame").on('click', function(){
     var playerName = localStorage.getItem("cahplayername");
-    var gameID = $("#gameID").val();
+    var gameID = $("#gameID").val().trim();
     $.ajax({
         url: "http://panick.ca:3000/v1/games/join",
         method: "POST",
