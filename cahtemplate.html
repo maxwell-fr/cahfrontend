@@ -63,8 +63,16 @@
                         <div class="card mt-4" style="width: 100%;">
                             <div class="card-body">
                                 <button id="toggleFS" class="float-right btn btn-secondary"><i class="fas fa-expand-alt"></i></button>
+                                <button id="notcopyGameID" class="float-right btn btn-secondary"><i class="fas fa-clipboard"></i></button>
                                 <h5 class="card-title"><strong>Definitely Not CAH</strong> v0.1.43</h5>
-                                <h6 class="card-subtitle mb-2 text-muted gameIDtag">Thanks for being a tester!</h6>
+                                <h6 id="gameIDtag" class="card-subtitle mb-2 text-muted gameIDtag">Thanks for being a tester!</h6>
+                                <div class="input-group d-none" id="gameIDgroup">
+                                    <input type="text" id="gameIDlink" class="form-control" readonly/>
+                                    <div id="copyGameID" class="input-group-prepend" title="Clck to copy" data-placement="right">
+                                      <div class="input-group-text"><i class="fas fa-clipboard"></i></div>
+                                    </div>
+                                  </div>
+                                
                                 <div class="row">
                                     <div class="col-12">
                                         <p id="namerow"></p>

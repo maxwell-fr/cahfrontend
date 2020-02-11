@@ -4,6 +4,28 @@ $(document).ready(function(){
     localStorage.removeItem("cahround");
     localStorage.removeItem("cahplayername");
     localStorage.removeItem("cahsubmitcards");
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    $("#gameID").val(vars.id);
+});
+
+$("#copyGameID").on('click', function() {
+    /* Get the text field */
+    var copyText = document.getElementById("gameIDlink");
+    
+    /* Select the text field */
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+    /* Copy the text inside the text field */
+    document.execCommand("copy");
+
+    /* Alert the copied text */
+    console.log("Copied the text: " + copyText.value);
+    $(this).attr('title','Copied!');
+    $(this).tooltip('show');
 });
 
 var namearray = [
@@ -88,7 +110,9 @@ $("#newGame").on('click', function(){
                 updatePlayers(result.data.players, null);
                 //$("#gameIDtag").html("Game ID: "+result.data.gameID);
                 $(".gameIDtag").each(function (){
-                    $(this).html("Game ID: "+result.data.gameID);
+                    $(this).html("Game Link:");
+                    $("#gameIDlink").val(window.location.href+"?id="+result.data.gameID);
+                    $("#gameIDgroup").removeClass("d-none");
                 });
                 $("#nextRound").removeClass("d-none");
                 $("#mobileNextRound").removeClass("d-none");
