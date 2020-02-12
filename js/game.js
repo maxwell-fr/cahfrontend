@@ -108,7 +108,6 @@ $("#newGame").on('click', function(){
                 addToConsole("Your player ID: "+result.data.players[0]._id);
                 setPlayerID(result.data.players[0]._id);
                 updatePlayers(result.data.players, null);
-                //$("#gameIDtag").html("Game ID: "+result.data.gameID);
                 $(".gameIDtag").each(function (){
                     $(this).html("Game Link:");
                     $("#gameIDlink").val(window.location.href+"?id="+result.data.gameID);
@@ -144,9 +143,15 @@ $("#joinGame").on('click', function(){
             setPlayerID(result.data.players[result.data.players.length-1]._id);
             updatePlayers(result.data.players, null);
             localStorage.removeItem("round");
-            //$("#gameIDtag").html("Game ID: "+result.data.gameID);
             $(".gameIDtag").each(function (){
-                $(this).html("Game ID: "+result.data.gameID);
+                $(this).html("Game Link:");
+                //if they 
+                if(window.location.href.indexOf("?") > 0){
+                    $("#gameIDlink").val(window.location.href.substr(0,window.location.href.indexOf("?"))+"?id="+result.data.gameID);
+                } else {
+                    $("#gameIDlink").val(window.location.href+"?id="+result.data.gameID);
+                }
+                $("#gameIDgroup").removeClass("d-none");
             });
             $("#splash").addClass("d-none");
             $("#game").removeClass("d-none");
