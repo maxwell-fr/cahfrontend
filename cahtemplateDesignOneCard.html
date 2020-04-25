@@ -6,55 +6,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <style>
-        .whiteCard:hover {
-            -webkit-filter: brightness(85%);
-            -moz-filter: brightness(85%);
-            -o-filter: brightness(85%);
-            -ms-filter: brightness(85%);
-            filter: brightness(85%);
-        }
-        .color1 {
-            background-color: #FF6633;
-        }
-        .color2 {
-            background-color: #FFB399   ;
-        }
-        .color3 {
-            background-color: #FF33FF;
-        }
-        .color4 {
-            background-color: #FFFF99;
-        }
-        .whiteCard {
-            width: 13rem;
-            min-height: 14rem;
-        }
-    </style>
-
-    <title>Panick Against Humanity</title>
+    <script src="https://kit.fontawesome.com/38e9318183.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+    <title>Definitely Not CAH</title>
   </head>
   <body>
-      <div style="width:100px; height:100%;"></div>
       <div class="container-fluid">
+        <ul id="navbar" class="nav justify-content-end">
+            <li class="nav-item">
+                <span class='badge badge-light rounded-lg border mt-1'><i class="far fa-clone"></i>  6/7</span>
+            </li>
+            <li class="nav-item">
+                <span id="playersIcon" class='badge badge-secondary rounded-lg border mt-1'><i class="fas fa-users mr-1"></i> 8</span>
+            </li>
+            <li class="nav-item">
+                <span id="menuIcon" class='badge badge-light border mt-1'><i class="fas fa-bars"></i></span>
+            </li>
+        </ul>
+        <ul class="list-group d-none" id="mobilePlayerList">
+            <li class="list-group-item">Player One<span class="badge badge-primary float-right mr-1">#</span></li>
+            <li class="list-group-item active">Player Two<span class="badge badge-info float-right"><i class="fas fa-gavel"></i></span><span class="badge badge-light float-right mr-1">#</span></li>
+            <li class="list-group-item">Player Three<span class="badge badge-primary float-right mr-1">#</span></li>
+            <li class="list-group-item">Player Four<span class="badge badge-primary float-right mr-1">#</span></li>
+            <li class="list-group-item">Player Five<span class="badge badge-primary float-right mr-1">#</span></li>
+            <li class="list-group-item">Player Six<span class="badge badge-primary float-right mr-1">#</span></li>
+            <li class="list-group-item">Player Seven<span class="badge badge-primary float-right mr-1">#</span></li>
+        </ul>
+        <div class="row d-none" id="mobileInfoRow">
+            <div class="col">
+                <div class="card mt-4" style="width: 100%;">
+                    <div class="card-body">
+                        <h5 class="card-title"><strong>Definitely Not CAH</strong></h5>
+                        <h6 class="card-subtitle mb-2 text-muted" id="gameIDtag">Thanks for being a tester!</h6>
+                        <div class="row">
+                            <div class="col-12">
+                                <p id="namerow"></p>
+                            </div>
+                        </div>
+                        <div class="row" id="gameDetails">
+                            <div class="col-12">
+                                <p id="whiteCardCount" class=""><span class='badge badge-light border'>White Cards Remaining: ####</span></p>
+                                <p id="blackCardCount"><span class='badge badge-dark'>Black Cards Remaining: ###</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
-                    <div id="blackCard" class="col-lg-3 col-md-4">
+                    <div id="blackCard" class="col-lg-3 col-md-12">
                         <div class="row">
-                            <div class="col-12">
-                                <div class="mb-4 mt-4 float-right">
-                                    <div class="card text-white bg-dark" style="width: 13rem; height: 14rem;"><div class="card-body"><p class="card-text">Black Card Text</p></div></div>
+                            <div class="col-12" id="blackCardHolder">
+                                <div class="mb-4 mt-4" id="blackCard">
+                                    <div class="card text-white bg-dark playerCard"><div class="card-body"><p class="card-text">Black Card Text</p></div></div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="row">
+                        <div class="row" id="infoRow">
                             <div class="col">
                                 <div class="card mt-4" style="width: 100%;">
                                     <div class="card-body">
-                                        <h5 class="card-title">Definitely Not CAH</h5>
+                                        <button id="toggleFS" class="float-right btn btn-secondary"><i class="fas fa-expand-alt"></i></button>
+                                        <h5 class="card-title"><strong>Definitely Not CAH</strong></h5>
                                         <h6 class="card-subtitle mb-2 text-muted" id="gameIDtag">Thanks for being a tester!</h6>
                                         <div class="row">
                                             <div class="col-12">
@@ -63,104 +80,118 @@
                                         </div>
                                         <div class="row" id="gameDetails">
                                             <div class="col-12">
-                                                <p id="whiteCardCount"><span class='badge badge-light'>White Cards Remaining: ####</span></p>
+                                                <p id="whiteCardCount" class=""><span class='badge badge-light border'>White Cards Remaining: ####</span></p>
                                                 <p id="blackCardCount"><span class='badge badge-dark'>Black Cards Remaining: ###</span></p>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-12">
-                                                <button class="btn btn-primary btn-block d-none" id="nextRound">Next Round</button>
+                                                <button class="btn btn-primary btn-block" id="nextRound"><i class="fas fa-angle-double-right"></i> Next Round <i class="fas fa-angle-double-right"></i></button>
                                             </div>
                                         </div>
+                                        <br/>
                                         <div class="row">
                                             <div class="col-12">
-                                                <button class="btn btn-primary btn-block d-none" id="clearSelection">Clear Selection</button>
+                                                <div id="selectionButtons" class="btn-group btn-block" role="group" aria-label="Basic example">
+                                                    <button type="button" class="btn btn-info" style="width:50%;" id="clearSelection"><i class="fas fa-eraser"></i> Clear Selection</button>
+                                                    <button type="button" class="btn btn-success" style="width:50%;" id="confirmSelection" disabled>Confirm <i class="far fa-share-square"></i></button>
+                                                  </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" id="playerRow">
                             <div class="col">
-                                <div class="card mt-4" style="width: 100%;">
-                                    <div class="card-header">
-                                        <strong>Players</strong>
-                                    </div>
-                                    <ul class="list-group list-group-flush" id="playerList">
-                                        <li class="list-group-item">Player One<span class="badge badge-dark float-right">Czar</span><span class="badge badge-primary float-right mr-1">#</span></li>
-                                        <li class="list-group-item">Player Two<span class="badge badge-primary float-right mr-1">#</span></li>
-                                        <li class="list-group-item">Player Three<span class="badge badge-primary float-right mr-1">#</span></li>
-                                        <li class="list-group-item">Player Four<span class="badge badge-primary float-right mr-1">#</span></li>
-                                        <li class="list-group-item">Player Five<span class="badge badge-primary float-right mr-1">#</span></li>
-                                        <li class="list-group-item">Player Six<span class="badge badge-primary float-right mr-1">#</span></li>
-                                        <li class="list-group-item">Player Seven<span class="badge badge-primary float-right mr-1">#</span></li>
-                                    </ul>
-                                </div>
+                                <hr/>
+                                <h4>Players</h4>
+                                <ul class="list-group" id="playerList">
+                                    <li class="list-group-item">Player One<span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item active">Player Two<span class="badge badge-info float-right"><i class="fas fa-gavel"></i></span><span class="badge badge-light float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Three<span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Four<span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Five<span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Six<span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Seven<span class="badge badge-primary float-right mr-1">#</span></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-9 col-md-8">
                         <div id="submittedWhiteCards" class="row">
-                            <div class="mr-2 mt-4 float-left">
-                                <div class="card bg-light whiteCard">
+                            <div class="mr-2 mt-4 float-left candidateCardHolder">
+                                <div class="card bg-light whiteCard playerCard">
                                     <div class="card-body">
                                         <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+                                        <span class="badge badge-success"><i class="fas fa-award fa-lg"></i></span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mr-2 mt-4 float-left">
-                                <div class="card bg-light whiteCard">
+                            <div class="mr-2 mt-4 float-left candidateCardHolder">
+                                <div class="card bg-light whiteCard playerCard">
                                     <div class="card-body">
                                         <p class="card-text">Amet dictum</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mr-2 mt-4 float-left">
-                                <div class="card bg-light whiteCard">
+                            <div class="mr-2 mt-4 float-left candidateCardHolder">
+                                <div class="card bg-light whiteCard playerCard">
                                     <div class="card-body">
                                         <p class="card-text">Proin nibh nisl condimentum id.</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mr-2 mt-4 float-left">
-                                <div class="card bg-light whiteCard">
+                            <div class="mr-2 mt-4 float-left candidateCardHolder">
+                                <div class="card bg-light whiteCard playerCard">
                                     <div class="card-body">
                                         <p class="card-text">Consectetur lorem donec massa sapien faucibus et.</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mr-2 mt-4 float-left">
-                                <div class="card bg-light whiteCard">
+                            <div class="mr-2 mt-4 float-left candidateCardHolder">
+                                <div class="card bg-light whiteCard playerCard">
                                     <div class="card-body">
                                         <p class="card-text">Ornare arcu odio ut sem nulla pharetra. Ornare quam viverra orci sagittis eu.</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mr-2 mt-4 float-left">
-                                <div class="card bg-light whiteCard">
+                            <div class="mr-2 mt-4 float-left candidateCardHolder">
+                                <div class="card bg-light whiteCard playerCard">
                                     <div class="card-body">
                                         <p class="card-text">Turpis egestas integer eget aliquet.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        
                         <hr/>
+                        <span class="badge badge-light border" style="position: relative; bottom: 40px;"><h5>Your Hand</h5></span>
                         <div class="row">
                             <div class="col">
                                 <div class="row" id="whiteHand">
-                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard"><div class="card-body"><p class="card-text">White Card One</p></div></div></div>
-                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard"><div class="card-body"><p class="card-text">White Card Two</p></div></div></div>
-                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard"><div class="card-body"><p class="card-text">White Card Three</p></div></div></div>
-                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard"><div class="card-body"><p class="card-text">White Card Four</p></div></div></div>
-                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard"><div class="card-body"><p class="card-text">White Card Five</p></div></div></div>
-                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard"><div class="card-body"><p class="card-text">White Card Six</p></div></div></div>
-                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard"><div class="card-body"><p class="card-text">White Card Seven</p></div></div></div>
-                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard"><div class="card-body"><p class="card-text">White Card Eight</p></div></div></div>
+                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard playerCard"><div class="card-body"><p class="card-text">White Card One</p></div></div></div>
+                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard playerCard"><div class="card-body"><p class="card-text">White Card Two</p></div></div></div>
+                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard playerCard"><div class="card-body"><p class="card-text">White Card Three</p></div></div></div>
+                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard playerCard"><div class="card-body"><p class="card-text">White Card Four</p></div></div></div>
+                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard playerCard"><div class="card-body"><p class="card-text">White Card Five</p></div></div></div>
+                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard playerCard"><div class="card-body"><p class="card-text">White Card Six</p></div></div></div>
+                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard playerCard"><div class="card-body"><p class="card-text">White Card Seven</p></div></div></div>
+                                    <div class="col-sm-6 col-md-5 col-lg-3 mb-4"><div class="card bg-light whiteCard playerCard"><div class="card-body"><p class="card-text">White Card Eight</p></div></div></div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="fixed-bottom" id="footerButtons">
+            <div class="row">
+                <div class="col-12">
+                    <div id="selectionButtons" class="btn-group btn-block" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-info" style="width:50%;" id="clearSelection"><i class="fas fa-eraser"></i> Clear Selection</button>
+                        <button type="button" class="btn btn-success" style="width:50%;" id="confirmSelection" disabled>Confirm <i class="far fa-share-square"></i></button>
+                      </div>
                 </div>
             </div>
         </div>
@@ -170,5 +201,55 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script>
+        $("#showToast").on('click', function(){
+            $('#testtoast').toast('show');
+        });
+
+        $("#toggleFS").on('click', function(e){
+            toggleFullscreen(e);
+        });
+
+        //mobileInfoRow
+        $("#menuIcon").on('click', function(){
+            if($('#mobileInfoRow').hasClass("d-none")){
+                $('#mobileInfoRow').removeClass("d-none");
+                $('#mobilePlayerList').addClass("d-none");
+            } else {
+                $('#mobileInfoRow').addClass("d-none");
+            }
+        });
+
+        $("#playersIcon").on('click', function(){
+            if($('#mobilePlayerList').hasClass("d-none")){
+                $('#mobilePlayerList').removeClass("d-none");
+                $('#mobileInfoRow').addClass("d-none");
+            } else {
+                $('#mobilePlayerList').addClass("d-none");
+            }
+        });
+
+        function toggleFullscreen(event) {
+            var element = document.documentElement;
+
+            if (event instanceof HTMLElement) {
+                element = event;
+            }
+
+            var isFullscreen = document.webkitIsFullScreen || document.mozFullScreen || false;
+
+            element.requestFullScreen = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || function () { return false; };
+            document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function () { return false; };
+
+            if(isFullscreen){
+                document.cancelFullScreen();
+                $("#toggleFS").html('<i class="fas fa-expand-alt"></i>');
+            } else {
+                element.requestFullScreen();
+                $("#toggleFS").html('<i class="fas fa-compress-alt"></i>');
+            }
+        }
+    </script>
+
   </body>
 </html>

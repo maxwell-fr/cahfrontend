@@ -8,65 +8,8 @@
     <!-- Bootstrap CSS -->
     <script src="https://kit.fontawesome.com/38e9318183.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP&display=swap" rel="stylesheet">
-    <style>
-        @media (min-width: 768px) {  
-            #navbar {
-                display: none;
-            }
-            .playerCard {
-                width: 13rem;
-                min-height: 14rem;
-            }
-            #blackCard {
-                float: right;
-            }
-            #footerButtons {
-                display: none;
-            }
-        }
-        @media (max-width: 768px) {  
-            body {
-                padding-left: 5px;
-                padding-right: 5px;
-                padding-bottom: 20px;
-            }
-            .playerCard {
-                width: 100%;
-            }
-            #infoRow {
-                display: none;
-            }
-            #playerRow {
-                display: none;
-            }
-            #footerButtons {
-                opacity: 1;
-                filter: alpha(opacity=100); /* For IE8 and earlier */
-            }
-        }
-
-        .btn.disabled, .btn:disabled {
-            opacity: 1;
-            cursor: not-allowed;
-        }
-        
-        body, h4, h5, h6 {
-            font-family: 'Noto Sans JP', sans-serif;
-        }
-        .whiteCard:hover {
-            -webkit-filter: brightness(85%);
-            -moz-filter: brightness(85%);
-            -o-filter: brightness(85%);
-            -ms-filter: brightness(85%);
-            filter: brightness(85%);
-        }
-        #gameBoard {
-            min-height: 17rem;
-        }
-        
-    </style>
-
     <title>Definitely Not CAH</title>
   </head>
   <body>
@@ -115,7 +58,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
-                    <div id="blackCard" class="col-lg-3 col-md-4">
+                    <div id="blackCard" class="col-lg-3 col-md-12">
                         <div class="row">
                             <div class="col-12" id="blackCardHolder">
                                 <div class="mb-4 mt-4" id="blackCard">
@@ -165,12 +108,12 @@
                                 <h4>Players</h4>
                                 <ul class="list-group" id="playerList">
                                     <li class="list-group-item">Player One<span class="badge badge-primary float-right mr-1">#</span></li>
-                                    <li class="list-group-item active">Player Two<span class="badge badge-info float-right"><i class="fas fa-gavel"></i></span><span class="badge badge-light float-right mr-1">#</span></li>
-                                    <li class="list-group-item">Player Three<span class="badge badge-primary float-right mr-1">#</span></li>
-                                    <li class="list-group-item">Player Four<span class="badge badge-primary float-right mr-1">#</span></li>
-                                    <li class="list-group-item">Player Five<span class="badge badge-primary float-right mr-1">#</span></li>
-                                    <li class="list-group-item">Player Six<span class="badge badge-primary float-right mr-1">#</span></li>
-                                    <li class="list-group-item">Player Seven<span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item active">I Have a Really Long Name</span><i class="fas fa-ban float-right mt-1"></i><span class="badge badge-light float-right mr-1">#</span><span class="badge badge-info float-right mr-1"><i class="fas fa-gavel"></i></li>
+                                    <li class="list-group-item">Player Three<i class="fas fa-ban float-right mt-1"></i><span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Four<i class="fas fa-ban float-right mt-1"></i><span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Five<i class="fas fa-ban float-right mt-1"></i><span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Six<i class="fas fa-ban float-right mt-1"></i><span class="badge badge-primary float-right mr-1">#</span></li>
+                                    <li class="list-group-item">Player Seven<i class="fas fa-ban float-right mt-1"></i><span class="badge badge-primary float-right mr-1">#</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -233,7 +176,9 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <hr/>
+                        <span class="badge badge-light border" style="position: relative; bottom: 40px;"><h5>Your Hand</h5></span>
                         <div class="row">
                             <div class="col">
                                 <div class="row" id="whiteHand">
@@ -263,12 +208,32 @@
             </div>
         </div>
       </div>
+      <div id="myModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Modal body text goes here.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+            </div>
+        </div>
+      </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script>
+        $('#myModal').modal('show');
         $("#showToast").on('click', function(){
             $('#testtoast').toast('show');
         });

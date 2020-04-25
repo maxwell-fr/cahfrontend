@@ -7,47 +7,78 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/38e9318183.js" crossorigin="anonymous"></script>
-    <style>
-        body, h4, h5, h6 {
-            font-family: 'Noto Sans JP', sans-serif;
-        }
-        .whiteCard:hover {
-            -webkit-filter: brightness(85%);
-            -moz-filter: brightness(85%);
-            -o-filter: brightness(85%);
-            -ms-filter: brightness(85%);
-            filter: brightness(85%);
-        }
-        .playerCard {
-            width: 13rem;
-            min-height: 14rem;
-        }
-        #gameBoard {
-            min-height: 17rem;
-        }
-    </style>
+    
     <title>Definitely Not CAH</title>
   </head>
   <body>
       <div class="container-fluid">
+        <ul id="navbar" class="nav justify-content-end">
+            <li class="nav-item">
+                <span class='badge badge-light rounded-lg border mt-1'><i class="far fa-clone"></i><span id="candidateCount">0/0</span></span>
+            </li>
+            <li class="nav-item">
+                <span id="playersIcon" class='badge badge-secondary rounded-lg border mt-1'><i class="fas fa-users mr-1"></i> <span id="playerCount">0</span></span>
+            </li>
+            <li class="nav-item">
+                <span id="menuIcon" class='badge badge-light border mt-1'><i class="fas fa-bars"></i></span>
+            </li>
+        </ul>
+        <ul class="list-group d-none" id="mobilePlayerList">
+        </ul>
+        <div class="row d-none" id="mobileInfoRow">
+            <div class="col">
+                <div class="card mt-4" style="width: 100%;">
+                    <div class="card-body">
+                        <h5 class="card-title"><strong>Definitely Not CAH</strong></h5>
+                        <h6 class="card-subtitle mb-2 text-muted gameIDtag">Thanks for being a tester!</h6>
+                        <div class="input-group d-none gameIDgroup">
+                            <input type="text" class="form-control gameIDlink" readonly/>
+                            <div id="copyGameID" class="input-group-prepend" title="Clck to copy" data-placement="right">
+                                <div class="input-group-text"><i class="fas fa-clipboard"></i></div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <p id="namerow"></p>
+                            </div>
+                        </div>
+                        <div class="row d-none" id="gameDetails">
+                            <div class="col-12">
+                                <p id="whiteCardCount"></p>
+                                <p id="blackCardCount"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-lg-3 col-md-4">
                 <div class="row">
                     <div class="col-12" id="blackCardHolder">
                         <div class="mb-4 mt-4 float-right" id="blackCard">
-                            <div class="card text-white bg-dark" style="width: 13rem; height: 14rem;"><div class="card-body"><p class="card-text">Welcome to Definitely Not CAH!</p></div></div>
+                            <div class="card text-white bg-dark playerCard"><div class="card-body"><p class="card-text">Welcome to Definitely Not CAH!</p></div></div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="infoRow">
                     <div class="col">
                         <div class="card mt-4" style="width: 100%;">
                             <div class="card-body">
                                 <button id="toggleFS" class="float-right btn btn-secondary"><i class="fas fa-expand-alt"></i></button>
                                 <h5 class="card-title"><strong>Definitely Not CAH</strong> v0.1.43</h5>
-                                <h6 class="card-subtitle mb-2 text-muted" id="gameIDtag">Thanks for being a tester!</h6>
+                                <h6 id="gameIDtag" class="card-subtitle mb-2 text-muted gameIDtag">Thanks for being a tester!</h6>
+                                <div class="input-group d-none gameIDgroup">
+                                    <input type="text" class="form-control gameIDlink" readonly/>
+                                    <div id="copyGameID" class="input-group-prepend copyGameID" title="Clck to copy" data-placement="right">
+                                      <div class="input-group-text"><i class="fas fa-clipboard"></i></div>
+                                    </div>
+                                </div>
+                                
                                 <div class="row">
                                     <div class="col-12">
                                         <p id="namerow"></p>
@@ -61,15 +92,15 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
-                                        <button class="btn btn-primary btn-block d-none" id="nextRound"><i class="fas fa-angle-double-right"></i> Next Round <i class="fas fa-angle-double-right"></i></button>
+                                        <button class="btn btn-primary btn-block d-none nextRound" id="nextRound"><i class="fas fa-angle-double-right"></i> Next Round <i class="fas fa-angle-double-right"></i></button>
                                         <button class="btn btn-primary btn-block d-none" id="czarBox"></button>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <div id="selectionButtons" class="btn-group btn-block d-none" role="group" aria-label="Basic example">
-                                            <button type="button" class="btn btn-info" style="width:50%;" id="clearSelection"><i class="fas fa-eraser"></i> Clear Selection</button>
-                                            <button type="button" class="btn btn-success" style="width:50%;" id="confirmSelection" disabled>Confirm <i class="far fa-share-square"></i></button>
+                                            <button type="button" class="btn btn-info clearSelection" style="width:50%;" id="clearSelection"><i class="fas fa-eraser"></i> Clear Selection</button>
+                                            <button type="button" class="btn btn-success confirmSelection" style="width:50%;" id="confirmSelection" disabled>Confirm <i class="far fa-share-square"></i></button>
                                           </div>
                                     </div>
                                 </div>
@@ -77,7 +108,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="playerRow">
                     <div class="col">
                         <hr/>
                         <h4>Players</h4>
@@ -87,7 +118,7 @@
                 </div>
             </div>
             <div class="col-lg-9 col-md-8" id="splash">
-                <div class="card mt-4 p-2 text-white bg-secondary" id="nameForm" style="width: 36rem; margin: auto;">
+                <div class="card mt-4 p-2 text-white bg-secondary" id="nameForm" style="max-width: 36rem; margin: auto;">
                     <div class="card-body">
                         <div class="col-12">
                             <label for="playerName">Welcome! Please enter your name!</label>
@@ -100,7 +131,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card mt-4 p-2 text-white bg-secondary d-none" id="newGameForm" style="width: 36rem; margin: auto;">
+                <div class="card mt-4 p-2 text-white bg-secondary d-none" id="newGameForm" style="max-width: 36rem; margin: auto;">
                     <div class="col-12">
                         <label for="playerName">Hello, <span id="displayPlayerName"></span>! Start a new Game?</label>
                     </div>
@@ -122,6 +153,7 @@
                 <div class="row" id="gameBoard">
                 </div>
                 <hr/>
+                <span class="badge badge-light border" style="position: relative; bottom: 40px;"><h5>Your Hand</h5></span>
                 <div class="row">
                     <div class="col">
                         <div class="row" id="whiteHand">
@@ -130,425 +162,48 @@
                 </div>
             </div>
         </div>
+        <div class="fixed-bottom" id="footerButtons">
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-primary btn-block d-none nextRound" id="mobileNextRound"><i class="fas fa-angle-double-right"></i> Next Round <i class="fas fa-angle-double-right"></i></button>
+                    <button class="btn btn-primary btn-block d-none" id="mobileCzarBox"></button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div id="mobileSelectionButtons" class="btn-group btn-block d-none" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-info clearSelection" style="width:50%;" id="mobileClearSelection"><i class="fas fa-eraser"></i> Clear Selection</button>
+                        <button type="button" class="btn btn-success confirmSelection" style="width:50%;" id="mobileConfirmSelection" disabled>Confirm <i class="far fa-share-square"></i></button>
+                      </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div id="playerOptions" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Player Options</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong id="playerOptionsName"></strong></p>
+                <p>THIS GUY! I know right? What do you want to do, boss?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Nevermind</button>
+                <button id="kickButton" type="button" class="btn btn-danger" data-id="">Kick</button>
+            </div>
+            </div>
+        </div>
       </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    
-    <script>
-        $(document).ready(function(){
-            localStorage.removeItem("cahplayerid");
-            localStorage.removeItem("cahgameid");
-            localStorage.removeItem("cahround");
-            localStorage.removeItem("cahplayername");
-            //localStorage.removeItem("cahczar");
-            localStorage.removeItem("cahsubmitcards");
-        });
-
-        var namearray = [
-            "Sweet!",
-            "That's cool I guess!",
-            "Your FBI agent says hi!",
-            "What's up?",
-            "Are you having fun yet?",
-            "Cool!",
-            "Will you be my friend?",
-            "I'm sure you're very nice!"
-        ];
-
-        setInterval(function(){
-            var gameID = getGameID();
-            if(gameID){
-                $("#gameDetails").removeClass("d-none");
-                if(!getRound()){
-                    $.ajax({
-                        url: "http://panick.ca:3000/v1/games/getGame",
-                        method: "POST",
-                        data: {
-                            gameID: gameID
-                        },
-                        success: function( result ) {
-                            updatePlayers(result.data.players, null);
-                            if(result.data.rounds.length > 0){
-                                getLatestRound(gameID);
-                            }
-                        }
-                    });
-                } else {
-                    getLatestRound(gameID);
-                }
-            }
-        }, 1000);
-
-        $("#nameButton").on('click', function(){
-            localStorage.setItem("cahplayername",$("#playerName").val());
-            $("#nameForm").addClass("d-none");
-            $("#newGameForm").removeClass("d-none");
-            $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
-            $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);namerow
-        });
-
-        $("#newGame").on('click', function(){
-            $("#whiteHand").html("");
-            //$("#gameBoard").html("");
-            var playerName = localStorage.getItem("cahplayername");
-            if(playerName.length == 0){
-                addToConsole("Player Name is required.");
-            } else {
-                $.ajax({
-                    url: "http://panick.ca:3000/v1/games/new",
-                    method: "POST",
-                    data: {
-                        player: playerName
-                    },
-                    success: function( result ) {
-                        addToConsole("Started new game: "+result.data.gameID);
-                        setGameID(result.data.gameID);
-                        addToConsole("Your player ID: "+result.data.players[0]._id);
-                        setPlayerID(result.data.players[0]._id);
-                        updatePlayers(result.data.players, null);
-                        $("#gameIDtag").html("Game ID: "+result.data.gameID);
-                        $("#nextRound").removeClass("d-none");
-                        $("#splash").addClass("d-none");
-                        $("#game").removeClass("d-none");
-                        $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
-                    }
-                });
-            }
-        });
-
-        $("#joinGame").on('click', function(){
-            var playerName = localStorage.getItem("cahplayername");
-            var gameID = $("#gameID").val();
-            $.ajax({
-                url: "http://panick.ca:3000/v1/games/join",
-                method: "POST",
-                data: {
-                    player: playerName,
-                    gameID: gameID
-                },
-                success: function( result ) {
-                    $("#whiteHand").html("");
-                    $("#gameBoard").html("");
-                    addToConsole("Joined game ID: "+result.data.gameID);
-                    setGameID(result.data.gameID);
-                    addToConsole("player ID: "+result.data.players[result.data.players.length-1]._id);
-                    setPlayerID(result.data.players[result.data.players.length-1]._id);
-                    updatePlayers(result.data.players, null);
-                    localStorage.removeItem("round");
-                    $("#gameIDtag").html("Game ID: "+result.data.gameID);
-                    $("#splash").addClass("d-none");
-                    $("#game").removeClass("d-none");
-                    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
-                }
-            });
-        });
-
-        $("#nextRound").on('click', function(){
-            var gameID = getGameID();
-            console.log("Starting new round");
-            $.ajax({
-                url: "http://panick.ca:3000/v1/games/startRound",
-                method: "POST",
-                data: {
-                    gameID: gameID
-                },
-                success: function( result ) {
-                    doGameUpdate(result.data);
-                    $("#nextRound").addClass("d-none");
-                }
-            });
-            
-        });
-
-        $("#clearSelection").on('click', function(){
-            clearSelection();
-        });
-
-        $("#confirmSelection").on('click', function(){
-            submitWhiteCards();
-        });
-
-        $("#toggleFS").on('click', function(e){
-            toggleFullscreen(e);
-        });
-
-        function toggleFullscreen(event) {
-            var element = document.documentElement;
-
-            if (event instanceof HTMLElement) {
-                element = event;
-            }
-
-            var isFullscreen = document.webkitIsFullScreen || document.mozFullScreen || false;
-
-            element.requestFullScreen = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || function () { return false; };
-            document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function () { return false; };
-
-            if(isFullscreen){
-                document.cancelFullScreen();
-                $("#toggleFS").html('<i class="fas fa-expand-alt"></i>');
-            } else {
-                element.requestFullScreen();
-                $("#toggleFS").html('<i class="fas fa-compress-alt"></i>');
-            }
-        }
-
-        function queueWhiteCard(cardID){
-            var cards = getSubmitCards();
-            var localRound = getRound();
-            if(localRound.czar != getPlayerID()){
-                if(!cards || (cards.length < localRound.blackCard.pick && !cards.some(card => card == cardID))){
-                    console.log('queue white card');
-                    $("#wc"+cardID).removeClass("bg-light");
-                    $("#wc"+cardID).addClass("bg-info");
-                    setSubmitCards(cardID);
-                }
-                cards = getSubmitCards();
-                if(cards.length == localRound.blackCard.pick){
-                    $("#confirmSelection").attr("disabled",false);
-                } else if(cards.length > localRound.blackCard.pick) { 
-                    clearSelection();
-                }
-            }
-        }
-
-        function submitWhiteCards(){
-            $("#selectionButtons").addClass("d-none");
-            var playerID = localStorage.getItem("cahplayerid");
-            var gameID = getGameID();
-            var localRound = getRound();
-            var cards = getSubmitCards();
-            var roundID = localRound._id;
-            //var czar = localStorage.getItem("cahczar");
-            if(localRound.czar != playerID){
-                $.ajax({
-                    url: "http://panick.ca:3000/v1/games/submitWhiteCard",
-                    method: "POST",
-                    data: {
-                        roundID: roundID,
-                        whiteCards: cards,
-                        playerID: playerID
-                    },
-                    success: function( result ) {
-                        doGameUpdate(result.data);
-                        getHand();
-                    }
-                });
-            }
-            clearSelection();
-        }
-
-        function getHand()
-        {
-            var playerID = getPlayerID();
-            $.ajax({
-                url: "http://panick.ca:3000/v1/games/getHand",
-                method: "POST",
-                data: {
-                    playerID: playerID
-                },
-                success: function( result ) {
-                    addToConsole("Aquired your hand.");
-                    $("#whiteHand").html("");
-                    var whiteHand = "";
-                    result.data.hand.forEach(function(card){
-                        whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-light whiteCard" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
-                    });
-                    $("#whiteHand").html(whiteHand);
-                }
-            });
-        }
-
-        function addToConsole(text){
-            console.log(text);
-        }
-
-        function getLatestRound(gameID){
-            $.ajax({
-                url: "http://panick.ca:3000/v1/games/getLatestRound",
-                method: "POST",
-                data: {
-                    gameID: gameID
-                },
-                success: function( result ) {
-                    doGameUpdate(result.data);
-                }
-            });
-        }
-
-        function updatePlayers(players, czar){
-            $("#playerList").html("");
-            var playerList = "";
-            // if(czar){
-            //     localStorage.setItem("cahczar", czar);
-            // } else {
-            //     localStorage.removeItem("cahczar");
-            // }
-            players.forEach(function(player){
-                if(player._id == czar){
-                    playerList += '<li class="list-group-item active">'+player.name+' <span class="badge badge-info float-right"><i class="fas fa-gavel"></i></span><span class="badge badge-light float-right mr-1">'+player.points+'</span></li>';
-                } else {
-                    playerList += '<li class="list-group-item">'+player.name+' <span class="badge badge-primary float-right">'+player.points+'</span></li>';
-                }
-            });
-            $("#playerList").html(playerList);
-        }
-
-        function updateGameBoard(blackCard, whiteCards, status){
-            var blackCardText = blackCard.text.toString().replace(/_/g,"____");
-            var blackCardHtml = '<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">'+blackCardText+'</p></div></div></div>';
-            var candidateCardsHtml = "";
-            whiteCards.forEach(function(candidateCard){
-                candidateCardsHtml += '<div class="mb-4 mt-4 float-left"><div class="playerCard card bg-light whiteCard" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body">';
-                var cardNum = 1;
-                candidateCard.cards.forEach(function(card){
-                    candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? "" : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
-                    cardNum++;
-                });
-                candidateCardsHtml += ((candidateCard.winner) ? ' <span class="badge badge-success"><i class="fas fa-award fa-lg"></i></span>' : '')+'</div></div></div>';
-            });
-            $("#blackCardHolder").html(blackCardHtml);
-            $("#gameBoard").html(candidateCardsHtml);
-        }
-
-        function selectCandidateCard(player){
-            var localRound = getRound();
-            //var czar = localStorage.getItem("cahczar");
-            var playerID = getPlayerID();
-            //var roundID = getRound()._id;
-            if(localRound.czar == playerID){
-                addToConsole("Selected Candidate Card.");
-                $.ajax({
-                    url: "http://panick.ca:3000/v1/games/selectCandidateCard",
-                    method: "POST",
-                    data: {
-                        roundID: localRound._id,
-                        player: player
-                    },
-                    success: function( result ) {
-                        updatePlayers(result.data.players, result.data.czar);
-                        $("#czarBox").addClass("d-none");
-                        $("#nextRound").removeClass("d-none");
-                    }
-                });
-            }
-        }
-
-        function doGameUpdate(round){
-            var playerID = getPlayerID();
-            var gameID = getGameID();
-            var localRound = getRound();
-            if(localRound){
-                //console.log(round.game);
-                $("#whiteCardCount").html("<span class='badge badge-light border'>White Cards Remaining: "+round.game.whiteCards.length+"</span>");
-                $("#blackCardCount").html("<span class='badge badge-dark'>Black Cards Remaining: "+round.game.blackCards.length+"</span>");
-            }
-            var changed = false;
-            if(!localRound){
-                console.log("Game started");
-                //console.log(round);
-                setRound(round);
-                updateGameBoard(round.blackCard, round.candidateCards, round.status);
-                getHand();
-                updatePlayers(round.players, round.czar);
-                if(round.czar != playerID){
-                    $("#selectionButtons").removeClass("d-none");
-                } else {
-                    $("#selectionButtons").addClass("d-none");
-                }
-                return;
-            }
-            if(localRound._id != round._id){
-                //new round
-                updateGameBoard(round.blackCard, round.candidateCards, round.status);
-                getHand();
-                clearSelection();
-                if(round.czar != playerID){
-                    $("#selectionButtons").removeClass("d-none");
-                    $("#confirmSelection").attr("disabled",true);
-                    $("#czarBox").addClass("d-none");
-                } else {
-                    $("#selectionButtons").addClass("d-none");
-                    $("#czarBox").html("You are the Czar!");
-                    $("#czarBox").removeClass("d-none");
-                    updatePlayers(round.players, round.czar);
-                }
-                changed = true;
-            }
-            if(localRound.status != round.status){
-                //New round status
-                console.log("new round status "+round.status);
-                updateGameBoard(round.blackCard, round.candidateCards, round.status);
-                changed = true;
-                if(round.czar == playerID){
-                    if(round.status == "select"){
-                        $("#czarBox").html("Pick a winner!");
-                    }
-                }
-                //getHand();
-            }
-            if(localRound.candidateCards.length != round.candidateCards.length){
-                //New candidate cards
-                console.log("new candidate cards");
-                updateGameBoard(round.blackCard, round.candidateCards, round.status);
-                changed = true;
-            }
-            if(changed){
-                console.log("change... updating localStorage");
-                setRound(round);
-                updatePlayers(round.players, round.czar);
-            }
-        }
-
-        function clearSelection(){
-            $(".whiteCard").each(function(){
-                $(this).removeClass("bg-info");
-                $(this).addClass("bg-light");
-            });
-            $("#confirmSelection").attr("disabled",true);
-            localStorage.removeItem("cahsubmitcards");
-        }
-
-        function getGameID(){
-            return localStorage.getItem("cahgameid");
-        }
-
-        function getPlayerID(){
-            return localStorage.getItem("cahplayerid");
-        }
-
-        function getRound(){
-            return JSON.parse(localStorage.getItem("cahround"));
-        }
-
-        function getSubmitCards(){
-            return JSON.parse(localStorage.getItem("cahsubmitcards"));
-        }
-
-        function setGameID(gameID){
-            localStorage.setItem("cahgameid", gameID);
-        }
-
-        function setPlayerID(playerID){
-            localStorage.setItem("cahplayerid", playerID);
-        }
-
-        function setRound(round){
-            localStorage.setItem("cahround",JSON.stringify(round));
-        }
-
-        function setSubmitCards(card){
-            var cards = getSubmitCards();
-            if(!cards){
-                cards = [card];
-            } else {
-                cards.push(card);
-            }
-            localStorage.setItem("cahsubmitcards",JSON.stringify(cards));
-        }
-    </script>
+    <script src="js/game.js"></script>
   </body>
 </html>
