@@ -11,7 +11,7 @@ $(document).ready(function(){
     $("#gameID").val(vars.id);
 });
 
-$("#copyGameID").on('click', function() {
+$(".copyGameID").on('click', function() {
     /* Get the text field */
     var copyText = document.getElementById("gameIDlink");
     
@@ -45,7 +45,7 @@ setInterval(function(){
         $("#gameDetails").removeClass("d-none");
         if(!getRound()){
             $.ajax({
-                url: "http://panick.ca:3000/v1/games/getGame",
+                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getGame",
                 method: "POST",
                 data: {
                     gameID: gameID
@@ -97,7 +97,7 @@ $("#newGame").on('click', function(){
         addToConsole("Player Name is required.");
     } else {
         $.ajax({
-            url: "http://panick.ca:3000/v1/games/new",
+            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/new",
             method: "POST",
             data: {
                 player: playerName
@@ -110,8 +110,10 @@ $("#newGame").on('click', function(){
                 updatePlayers(result.data.players, null);
                 $(".gameIDtag").each(function (){
                     $(this).html("Game Link:");
-                    $("#gameIDlink").val(window.location.href+"?id="+result.data.gameID);
-                    $("#gameIDgroup").removeClass("d-none");
+                    $(".gameIDlink").each(function (){
+                        $(this).val(window.location.href+"?id="+result.data.gameID);
+                    });
+                    $(".gameIDgroup").removeClass("d-none");
                 });
                 $("#nextRound").removeClass("d-none");
                 $("#mobileNextRound").removeClass("d-none");
@@ -128,7 +130,7 @@ $("#joinGame").on('click', function(){
     var playerName = localStorage.getItem("cahplayername");
     var gameID = $("#gameID").val().trim();
     $.ajax({
-        url: "http://panick.ca:3000/v1/games/join",
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/join",
         method: "POST",
         data: {
             player: playerName,
@@ -145,13 +147,20 @@ $("#joinGame").on('click', function(){
             localStorage.removeItem("round");
             $(".gameIDtag").each(function (){
                 $(this).html("Game Link:");
-                //if they 
+                /* 
+                    If they joined via a gameID link we want to grab the URL up the the '?' 
+                    then add the gameID to avoid the gameID being added on twice.
+                */
                 if(window.location.href.indexOf("?") > 0){
-                    $("#gameIDlink").val(window.location.href.substr(0,window.location.href.indexOf("?"))+"?id="+result.data.gameID);
+                    $(".gameIDlink").each(function () {
+                        $(this).val(window.location.href.substr(0,window.location.href.indexOf("?"))+"?id="+result.data.gameID);
+                    });
                 } else {
-                    $("#gameIDlink").val(window.location.href+"?id="+result.data.gameID);
+                    $(".gameIDlink").each(function () {
+                        $(this).val(window.location.href+"?id="+result.data.gameID);
+                    });
                 }
-                $("#gameIDgroup").removeClass("d-none");
+                $(".gameIDgroup").removeClass("d-none");
             });
             $("#splash").addClass("d-none");
             $("#game").removeClass("d-none");
@@ -165,7 +174,7 @@ $(".nextRound").on('click', function(){
     var gameID = getGameID();
     console.log("Starting new round");
     $.ajax({
-        url: "http://panick.ca:3000/v1/games/startRound",
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/startRound",
         method: "POST",
         data: {
             gameID: gameID
@@ -196,7 +205,7 @@ $("#kickButton").on('click', function(e){
     var playerID = $(this).attr('data-id');
     var gameID = getGameID();
     $.ajax({
-        url: "http://panick.ca:3000/v1/games/removePlayer",
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/removePlayer",
         method: "POST",
         data: {
             gameID: gameID,
@@ -269,7 +278,7 @@ function submitWhiteCards(){
     //var czar = localStorage.getItem("cahczar");
     if(localRound.czar != playerID){
         $.ajax({
-            url: "http://panick.ca:3000/v1/games/submitWhiteCard",
+            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/submitWhiteCard",
             method: "POST",
             data: {
                 roundID: roundID,
@@ -289,7 +298,7 @@ function getHand()
 {
     var playerID = getPlayerID();
     $.ajax({
-        url: "http://panick.ca:3000/v1/games/getHand",
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getHand",
         method: "POST",
         data: {
             playerID: playerID
@@ -312,7 +321,7 @@ function addToConsole(text){
 
 function getLatestRound(gameID){
     $.ajax({
-        url: "http://panick.ca:3000/v1/games/getLatestRound",
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getLatestRound",
         method: "POST",
         data: {
             gameID: gameID
@@ -346,8 +355,8 @@ function updatePlayers(players, czar){
     $("#playerCount").html(players.length);
 }
 
-function updateGameBoard(blackCard, whiteCards, status){
-    var blackCardText = blackCard.text.toString().replace(/_/g,"____");
+function updateGameBoard(blackCard, whiteCards, status, winner = null){
+    var blackCardText = blackCard.text.toString();
     var blackCardHtml = '<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">'+blackCardText+'</p></div></div></div>';
     var candidateCardsHtml = "";
     whiteCards.forEach(function(candidateCard){
@@ -357,7 +366,7 @@ function updateGameBoard(blackCard, whiteCards, status){
             candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? "" : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
             cardNum++;
         });
-        candidateCardsHtml += ((candidateCard.winner) ? ' <span class="badge badge-success"><i class="fas fa-award fa-lg"></i></span>' : '')+'</div></div></div>';
+        candidateCardsHtml += ((candidateCard.winner) ? ' <span class="badge badge-success"><i class="fas fa-award fa-lg"></i> &nbsp;'+winner+'</span>' : '')+'</div></div></div>';
     });
     $("#blackCardHolder").html(blackCardHtml);
     $("#gameBoard").html(candidateCardsHtml);
@@ -375,7 +384,7 @@ function selectCandidateCard(player){
     if(localRound.czar == playerID){
         addToConsole("Selected Candidate Card.");
         $.ajax({
-            url: "http://panick.ca:3000/v1/games/selectCandidateCard",
+            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/selectCandidateCard",
             method: "POST",
             data: {
                 roundID: localRound._id,
@@ -444,7 +453,11 @@ function doGameUpdate(round){
     if(localRound.status != round.status){
         //New round status
         console.log("new round status "+round.status);
-        updateGameBoard(round.blackCard, round.candidateCards, round.status);
+        if(round.winner){
+            updateGameBoard(round.blackCard, round.candidateCards, round.status, round.winner.name || null);
+        } else {
+            updateGameBoard(round.blackCard, round.candidateCards, round.status);
+        }
         changed = true;
         if(round.czar == playerID){
             if(round.status == "select"){
