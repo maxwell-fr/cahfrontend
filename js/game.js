@@ -347,7 +347,7 @@ function updatePlayers(players, czar){
         if(player._id == czar){
             playerList += '<li class="player list-group-item active" '+(playerID == owner && player._id != owner ? 'onClick="playerMenu(\''+player._id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(player._id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-light float-right mr-1">'+player.points+'</span><span class="badge badge-info float-right mr-1"><i class="fas fa-gavel"></i></span></li>';
         } else {
-            playerList += '<li class="player list-group-item" '+(playerID == owner && player._id != owner ? 'onClick="playerMenu(\''+player._id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(player._id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-primary float-right">'+player.points+'</span></li>';
+            playerList += '<li class="player list-group-item" '+(playerID == owner && player._id != owner ? 'onClick="playerMenu(\''+player._id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(!player.active ? '<i class="fas fa-user-clock"></i>' : '')+(player._id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-primary float-right">'+player.points+'</span></li>';
         }
     });
     $("#playerList").html(playerList);
