@@ -48,8 +48,8 @@
                         </div>
                         <div class="row d-none" id="gameDetails">
                             <div class="col-12">
-                                <p id="whiteCardCount"></p>
-                                <p id="blackCardCount"></p>
+                                <p class="whiteCardCount"></p>
+                                <p class="blackCardCount"></p>
                             </div>
                         </div>
                     </div>
@@ -84,10 +84,10 @@
                                         <p id="namerow"></p>
                                     </div>
                                 </div>
-                                <div class="row d-none" id="gameDetails">
+                                <div class="row" id="gameDetails">
                                     <div class="col-12">
-                                        <p id="whiteCardCount"></p>
-                                        <p id="blackCardCount"></p>
+                                        <p class="whiteCardCount"></p>
+                                        <p class="blackCardCount"></p>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -128,6 +128,17 @@
                         </div>
                         <div class="col-12">
                             <button class="btn btn-primary mt-2 btn-block" id="nameButton">Set Name</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-4 p-2 text-white bg-secondary d-none" id="continueGameForm" style="max-width: 36rem; margin: auto;">
+                    <div class="col-12">
+                        Looks like you might have been in a game. Do you want to re-join it?
+                    </div>
+                    <div class="col-12">
+                        <div class="row mt-2">
+                            <div class="col-6"><button class="btn btn-primary btn-block" id="continueGame">Yes please!</button></div>
+                            <div class="col-6"><button class="btn btn-primary btn-block" id="resetGame">Nah</button></div>
                         </div>
                     </div>
                 </div>

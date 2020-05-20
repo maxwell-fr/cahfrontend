@@ -1,9 +1,15 @@
 $(document).ready(function(){
-    localStorage.removeItem("cahplayerid");
-    localStorage.removeItem("cahgameid");
-    localStorage.removeItem("cahround");
-    localStorage.removeItem("cahplayername");
-    localStorage.removeItem("cahsubmitcards");
+    var gameID = getGameID();
+    if(!gameID){
+        clearData();
+    } else {
+        localStorage.setItem("lastcahgameid", gameID);
+        localStorage.removeItem("cahgameid");
+        $("#nameForm").addClass("d-none");
+        $("#continueGameForm").removeClass("d-none");
+        $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
+        $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);namerow
+    }
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
@@ -60,6 +66,11 @@ setInterval(function(){
         } else {
             getLatestRound(gameID);
         }
+    } else {
+        $("#selectionButtons").addClass("d-none");
+        $("#mobileSelectionButtons").addClass("d-none");
+        $("#playerList").html("");
+        $("#mobilePlayerList").html("");
     }
 }, 1000);
 
@@ -124,6 +135,31 @@ $("#newGame").on('click', function(){
             }
         });
     }
+});
+
+$("#resetGame").on('click', function(){
+    clearData();
+    $("#continueGameForm").addClass("d-none");
+    $("#nameForm").removeClass("d-none");
+    $("#selectionButtons").addClass("d-none");
+    $("#mobileSelectionButtons").addClass("d-none");
+    //console.log("did the buttons disappear?");
+    $("#playerList").html("");
+    $("#mobilePlayerList").html("");
+});
+
+$("#continueGame").on('click', function(){
+    $("#whiteHand").html("");
+    $("#gameBoard").html("");
+    $("#splash").addClass("d-none");
+    $("#continueGameForm").addClass("d-none");
+    $("#game").removeClass("d-none");
+    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
+    var gameID = localStorage.getItem("lastcahgameid");
+    localStorage.setItem("cahgameid",gameID);
+    localStorage.removeItem("cahround");
+    localStorage.removeItem("lastcahgameid");
+    getLatestRound(gameID);
 });
 
 $("#joinGame").on('click', function(){
@@ -328,6 +364,7 @@ function getLatestRound(gameID){
         },
         success: function( result ) {
             doGameUpdate(result.data);
+            console.log(result.data);
         }
     });
 }
@@ -407,8 +444,12 @@ function doGameUpdate(round){
     var localRound = getRound();
     if(localRound){
         //console.log(round.game);
-        $("#whiteCardCount").html("<span class='badge badge-light border'>White Cards Remaining: "+round.game.whiteCards.length+"</span>");
-        $("#blackCardCount").html("<span class='badge badge-dark'>Black Cards Remaining: "+round.game.blackCards.length+"</span>");
+        $(".whiteCardCount").each(function(){
+            $(this).html("<span class='badge badge-light border'>White Cards Remaining: "+round.game.whiteCards.length+"</span>");
+        });
+        $(".blackCardCount").each(function(){
+            $(this).html("<span class='badge badge-dark border'>Black Cards Remaining: "+round.game.blackCards.length+"</span>");
+        });
     }
     var changed = false;
     if(!localRound){
@@ -534,4 +575,13 @@ function setSubmitCards(card){
         cards.push(card);
     }
     localStorage.setItem("cahsubmitcards",JSON.stringify(cards));
+}
+
+function clearData()
+{
+    localStorage.removeItem("cahplayerid");
+    localStorage.removeItem("cahgameid");
+    localStorage.removeItem("cahround");
+    localStorage.removeItem("cahplayername");
+    localStorage.removeItem("cahsubmitcards");
 }
