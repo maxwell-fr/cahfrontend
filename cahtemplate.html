@@ -118,6 +118,7 @@
                 </div>
             </div>
             <div class="col-lg-9 col-md-8" id="splash">
+                <h1 style="max-width: 10rem; margin: auto;">DENCAH</h1>
                 <div class="card mt-4 p-2 text-white bg-secondary" id="nameForm" style="max-width: 36rem; margin: auto;">
                     <div class="card-body">
                         <div class="col-12">
@@ -142,23 +143,76 @@
                         </div>
                     </div>
                 </div>
-                <div class="card mt-4 p-2 text-white bg-secondary d-none" id="newGameForm" style="max-width: 36rem; margin: auto;">
-                    <div class="col-12">
-                        <label for="playerName">Hello, <span id="displayPlayerName"></span>! Start a new Game?</label>
+                <div class="accordion d-none" id="newGameForm">
+                    <div class="card mt-4 p-2 text-white bg-secondary" style="max-width: 36rem; margin: auto;">
+                      <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                          <button class="btn btn-link text-light btn-block collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            <h2>Start a new game</h2>
+                          </button>
+                        </h2>
+                      </div>
+                  
+                      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#newGameForm">
+                        <div class="card-body">
+                            <div id="sets" class="col-12 accordion">
+                                <button class="btn btn-link text-light btn-block collapsed" type="button" data-toggle="collapse" data-target="#options" aria-expanded="false" aria-controls="options">
+                                    <h3>Choose Sets <i class="fas fa-caret-down"></i></h3>
+                                </button>
+                                <div id="options" class="collapse" aria-labelledby="headingOne" data-parent="#sets">
+
+                                </div>
+                            </div>
+                            <hr/>
+                            <div id="time_limit_option" class="row">
+                                <div class="col-6">
+                                    <label class="float-right" for="time_limit">Turn time limit (mins)</label>
+                                </div>
+                                <div class="col-6">
+                                    <select id="time_limit" class="form-control" style="max-width: 60px;">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5" selected>5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="col-12">
+                                <button class="btn btn-primary btn-block mt-2 mb-2" id="newGame">Start it up!</button>
+                            </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="col-12">
-                        <button class="btn btn-primary mt-2 mb-2" id="newGame">New Game</button>
+                    <div class="card mt-4 p-2 text-white bg-secondary" style="max-width: 36rem; margin: auto;">
+                      <div class="card-header" id="headingTwo">
+                        <h2 class="mb-0">
+                          <button class="btn btn-link text-light btn-block collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <h2>Join a game</h2>
+                          </button>
+                        </h2>
+                      </div>
+                      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#newGameForm">
+                        <div class="card-body">
+                            <div class="col-12">
+                                Paste the game ID below. If you clicked a link this should be filled in for you!
+                            </div>
+                            <div class="col-12">
+                                <input type="text" class="form-control" id="gameID" />
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary mt-2" id="joinGame">Join Game</button>
+                            </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="col-12">
-                        <label for="gameID">Or join an existing game</label>
-                    </div>
-                    <div class="col-12">
-                        <input type="text" class="form-control" id="gameID" />
-                    </div>
-                    <div class="col-12">
-                        <button class="btn btn-primary mt-2" id="joinGame">Join Game</button>
-                    </div>
-                </div>
+                  </div>
             </div>
             <div class="col-lg-9 col-md-8 d-none" id="game">
                 <div class="row" id="gameBoard">

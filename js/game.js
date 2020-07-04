@@ -1,4 +1,22 @@
 $(document).ready(function(){
+    $.ajax({
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllSets",
+        method: "GET",
+        data: {
+            //gameID: gameID
+        },
+        success: function( result ) {
+            //console.log(result.data);
+            var sets = result.data;
+            sets.forEach(function(set){
+                $("#options").append(`
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="set_switch custom-control-input" id="${set.id}" checked>
+                        <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-primary">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
+                    </div>`);
+            })
+        }
+    });
     var gameID = getGameID();
     if(!gameID){
         clearData();
@@ -97,10 +115,18 @@ $("#nameButton").on('click', function(){
     $("#nameForm").addClass("d-none");
     $("#newGameForm").removeClass("d-none");
     $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
-    $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);namerow
+    $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
 });
 
 $("#newGame").on('click', function(){
+    var sets = [];
+    $(".set_switch").each(function() {
+        if($(this).is(":checked")){
+            sets.push($(this).prop("id"));
+        }
+    });
+
+    var time_limit = $("#time_limit").val();
     $("#whiteHand").html("");
     //$("#gameBoard").html("");
     var playerName = localStorage.getItem("cahplayername");
@@ -111,7 +137,9 @@ $("#newGame").on('click', function(){
             url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/new",
             method: "POST",
             data: {
-                player: playerName
+                player: playerName,
+                sets: sets,
+                time_limit: time_limit
             },
             success: function( result ) {
                 addToConsole("Started new game: "+result.data.gameID);
