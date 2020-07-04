@@ -35,8 +35,8 @@
                         <h5 class="card-title"><strong>Definitely Not CAH</strong></h5>
                         <h6 class="card-subtitle mb-2 text-muted gameIDtag">Thanks for being a tester!</h6>
                         <div class="input-group d-none gameIDgroup">
-                            <input type="text" class="form-control gameIDlink" readonly/>
-                            <div id="copyGameID" class="input-group-prepend" title="Clck to copy" data-placement="right">
+                            <input type="text" id="gameIDlinkMobile" class="form-control gameIDlink" readonly/>
+                            <div id="copyGameID" class="input-group-prepend copyGameID" title="Click to copy" data-placement="right">
                                 <div class="input-group-text"><i class="fas fa-clipboard"></i></div>
                             </div>
                         </div>
@@ -73,8 +73,8 @@
                                 <h5 class="card-title"><strong>Definitely Not CAH</strong> v0.1.43</h5>
                                 <h6 id="gameIDtag" class="card-subtitle mb-2 text-muted gameIDtag">Thanks for being a tester!</h6>
                                 <div class="input-group d-none gameIDgroup">
-                                    <input type="text" class="form-control gameIDlink" readonly/>
-                                    <div id="copyGameID" class="input-group-prepend copyGameID" title="Clck to copy" data-placement="right">
+                                    <input type="text" id="gameIDlink" class="form-control gameIDlink" readonly/>
+                                    <div id="copyGameID" class="input-group-prepend copyGameID" title="Click to copy" data-placement="right">
                                       <div class="input-group-text"><i class="fas fa-clipboard"></i></div>
                                     </div>
                                 </div>
@@ -160,7 +160,8 @@
                                     <h3>Choose Sets <i class="fas fa-caret-down"></i></h3>
                                 </button>
                                 <div id="options" class="collapse" aria-labelledby="headingOne" data-parent="#sets">
-
+                                    <button class="btn btn-primary" id="set_toggle_on">All On</button>
+                                    <button class="btn btn-light" id="set_toggle_off">All Off</button>
                                 </div>
                             </div>
                             <hr/>
@@ -193,7 +194,7 @@
                     <div class="card mt-4 p-2 text-white bg-secondary" style="max-width: 36rem; margin: auto;">
                       <div class="card-header" id="headingTwo">
                         <h2 class="mb-0">
-                          <button class="btn btn-link text-light btn-block collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                          <button id="openJoinButton" class="btn btn-link text-light btn-block collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                             <h2>Join a game</h2>
                           </button>
                         </h2>
@@ -207,7 +208,7 @@
                                 <input type="text" class="form-control" id="gameID" />
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-primary mt-2" id="joinGame">Join Game</button>
+                                <button class="btn btn-primary btn-block mt-2" id="joinGame">Join Game</button>
                             </div>
                         </div>
                       </div>

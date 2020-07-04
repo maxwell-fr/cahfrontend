@@ -32,6 +32,13 @@ $(document).ready(function(){
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
     });
+    if(vars.id){
+        $("#openJoinButton").removeClass("collapsed");
+        $("#collapseTwo").addClass("show");
+        console.log(vars.id);
+    } else {
+        console.log("no id");
+    }
     $("#gameID").val(vars.id);
 });
 
@@ -116,6 +123,17 @@ $("#nameButton").on('click', function(){
     $("#newGameForm").removeClass("d-none");
     $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
     $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
+});
+
+$("#set_toggle_off").on('click', function(){
+    $(".set_switch").each(function() {
+        $(this).prop("checked",false);
+    });
+});
+$("#set_toggle_on").on('click', function(){
+    $(".set_switch").each(function() {
+        $(this).prop("checked",true);
+    });
 });
 
 $("#newGame").on('click', function(){
@@ -216,10 +234,12 @@ $("#joinGame").on('click', function(){
                     then add the gameID to avoid the gameID being added on twice.
                 */
                 if(window.location.href.indexOf("?") > 0){
+                    console.log("joined through link");
                     $(".gameIDlink").each(function () {
                         $(this).val(window.location.href.substr(0,window.location.href.indexOf("?"))+"?id="+result.data.gameID);
                     });
                 } else {
+                    console.log("did not join through link");
                     $(".gameIDlink").each(function () {
                         $(this).val(window.location.href+"?id="+result.data.gameID);
                     });
