@@ -18,7 +18,7 @@ $(document).ready(function(){
         }
     });
     var gameID = getGameID();
-    if(!gameID){
+    if(!gameID || getGameOver()){
         clearData();
     } else {
         localStorage.setItem("lastcahgameid", gameID);
@@ -35,9 +35,7 @@ $(document).ready(function(){
     if(vars.id){
         $("#openJoinButton").removeClass("collapsed");
         $("#collapseTwo").addClass("show");
-        console.log(vars.id);
-    } else {
-        console.log("no id");
+        //console.log(vars.id);
     }
     $("#gameID").val(vars.id);
 });
@@ -83,6 +81,7 @@ setInterval(function(){
                 },
                 success: function( result ) {
                     updatePlayers(result.data.players, null);
+                    //console.log(result.data.winner);
                     if(result.data.rounds.length > 0){
                         getLatestRound(gameID);
                     }
@@ -145,6 +144,7 @@ $("#newGame").on('click', function(){
     });
 
     var time_limit = $("#time_limit").val();
+    var score_limit = $("#score_limit").val();
     $("#whiteHand").html("");
     //$("#gameBoard").html("");
     var playerName = localStorage.getItem("cahplayername");
@@ -157,7 +157,8 @@ $("#newGame").on('click', function(){
             data: {
                 player: playerName,
                 sets: sets,
-                time_limit: time_limit
+                time_limit: time_limit,
+                score_limit: score_limit
             },
             success: function( result ) {
                 addToConsole("Started new game: "+result.data.gameID);
@@ -189,7 +190,6 @@ $("#resetGame").on('click', function(){
     $("#nameForm").removeClass("d-none");
     $("#selectionButtons").addClass("d-none");
     $("#mobileSelectionButtons").addClass("d-none");
-    //console.log("did the buttons disappear?");
     $("#playerList").html("");
     $("#mobilePlayerList").html("");
 });
@@ -234,12 +234,10 @@ $("#joinGame").on('click', function(){
                     then add the gameID to avoid the gameID being added on twice.
                 */
                 if(window.location.href.indexOf("?") > 0){
-                    console.log("joined through link");
                     $(".gameIDlink").each(function () {
                         $(this).val(window.location.href.substr(0,window.location.href.indexOf("?"))+"?id="+result.data.gameID);
                     });
                 } else {
-                    console.log("did not join through link");
                     $(".gameIDlink").each(function () {
                         $(this).val(window.location.href+"?id="+result.data.gameID);
                     });
@@ -256,7 +254,6 @@ $("#joinGame").on('click', function(){
 
 $(".nextRound").on('click', function(){
     var gameID = getGameID();
-    console.log("Starting new round");
     $.ajax({
         url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/startRound",
         method: "POST",
@@ -412,7 +409,7 @@ function getLatestRound(gameID){
         },
         success: function( result ) {
             doGameUpdate(result.data);
-            console.log(result.data);
+            //console.log(result.data);
         }
     });
 }
@@ -486,86 +483,104 @@ function selectCandidateCard(player){
     }
 }
 
+function gameOver(name){
+    setGameOver();
+    $("#gameDetails").html(name+" HAS WON THE GAME!");
+    $("#nextRound").addClass("d-none");
+    $("#mobileNextRound").addClass("d-none");
+    $("#selectionButtons").addClass("d-none");
+    $("#mobileSelectionButtons").addClass("d-none");
+    $("#winnerDisplay").removeClass("d-none");
+    $("#winnerDisplay").html('<i class="fas fa-trophy"></i> '+name+" HAS WON THE GAME! "+'<i class="fas fa-trophy"></i>');
+    $("#mobileWinnerDisplay").removeClass("d-none");
+    $("#mobileWinnerDisplay").html('<i class="fas fa-trophy"></i> '+name+" HAS WON THE GAME! "+'<i class="fas fa-trophy"></i>');
+}
+
 function doGameUpdate(round){
     var playerID = getPlayerID();
     var gameID = getGameID();
     var localRound = getRound();
-    if(localRound){
-        //console.log(round.game);
-        $(".whiteCardCount").each(function(){
-            $(this).html("<span class='badge badge-light border'>White Cards Remaining: "+round.game.whiteCards.length+"</span>");
-        });
-        $(".blackCardCount").each(function(){
-            $(this).html("<span class='badge badge-dark border'>Black Cards Remaining: "+round.game.blackCards.length+"</span>");
-        });
-    }
-    var changed = false;
-    if(!localRound){
-        console.log("Game started");
-        //console.log(round);
-        setRound(round);
-        updateGameBoard(round.blackCard, round.candidateCards, round.status);
-        getHand();
-        updatePlayers(round.players, round.czar);
-        if(round.czar != playerID){
-            $("#selectionButtons").removeClass("d-none");
-            $("#mobileSelectionButtons").removeClass("d-none");
-        } else {
-            $("#selectionButtons").addClass("d-none");
-            $("#mobileSelectionButtons").addClass("d-none");
+    if(round.game.winner){
+        console.log("Game winner",round.game.winner.name);
+        gameOver(round.game.winner.name);
+    } else {
+        if(localRound){
+            //console.log(round.game);
+            $(".whiteCardCount").each(function(){
+                $(this).html("<span class='badge badge-light border'>White Cards Remaining: "+round.game.whiteCards.length+"</span>");
+            });
+            $(".blackCardCount").each(function(){
+                $(this).html("<span class='badge badge-dark border'>Black Cards Remaining: "+round.game.blackCards.length+"</span>");
+            });
         }
-        return;
-    }
-    if(localRound._id != round._id){
-        //new round
-        updateGameBoard(round.blackCard, round.candidateCards, round.status);
-        getHand();
-        clearSelection();
-        if(round.czar != playerID){
-            $("#selectionButtons").removeClass("d-none");
-            $("#mobileSelectionButtons").removeClass("d-none");
-            $("#confirmSelection").attr("disabled",true);
-            $("#mobileConfirmSelection").attr("disabled",true);
-            $("#czarBox").addClass("d-none");
-            $("#mobileCzarBox").addClass("d-none");
-        } else {
-            $("#selectionButtons").addClass("d-none");
-            $("#mobileSelectionButtons").addClass("d-none");
-            $("#czarBox").html("You are the Czar!");
-            $("#czarBox").removeClass("d-none");
-            $("#mobileCzarBox").html("You are the Czar!");
-            $("#mobileCzarBox").removeClass("d-none");
+        var changed = false;
+        if(!localRound){
+            console.log("Game started");
+            //console.log(round);
+            setRound(round);
+            updateGameBoard(round.blackCard, round.candidateCards, round.status);
+            getHand();
+            updatePlayers(round.players, round.czar);
+            if(round.czar != playerID){
+                $("#selectionButtons").removeClass("d-none");
+                $("#mobileSelectionButtons").removeClass("d-none");
+            } else {
+                $("#selectionButtons").addClass("d-none");
+                $("#mobileSelectionButtons").addClass("d-none");
+            }
+            return;
+        }
+        if(localRound._id != round._id){
+            //new round
+            updateGameBoard(round.blackCard, round.candidateCards, round.status);
+            getHand();
+            clearSelection();
+            if(round.czar != playerID){
+                $("#selectionButtons").removeClass("d-none");
+                $("#mobileSelectionButtons").removeClass("d-none");
+                $("#confirmSelection").attr("disabled",true);
+                $("#mobileConfirmSelection").attr("disabled",true);
+                $("#czarBox").addClass("d-none");
+                $("#mobileCzarBox").addClass("d-none");
+            } else {
+                $("#selectionButtons").addClass("d-none");
+                $("#mobileSelectionButtons").addClass("d-none");
+                $("#czarBox").html("You are the Czar!");
+                $("#czarBox").removeClass("d-none");
+                $("#mobileCzarBox").html("You are the Czar!");
+                $("#mobileCzarBox").removeClass("d-none");
+                updatePlayers(round.players, round.czar);
+            }
+            changed = true;
+        }
+        if(localRound.status != round.status){
+            //New round status
+            console.log("new round status "+round.status);
+            if(round.winner){
+                updateGameBoard(round.blackCard, round.candidateCards, round.status, round.winner.name || null);
+            } else {
+                updateGameBoard(round.blackCard, round.candidateCards, round.status);
+            }
+            changed = true;
+            if(round.czar == playerID){
+                if(round.status == "select"){
+                    $("#czarBox").html("Pick a winner!");
+                    $("#mobileCzarBox").html("Pick a winner!");
+                }
+            }
+            //getHand();
+        }
+        if(localRound.candidateCards.length != round.candidateCards.length){
+            //New candidate cards
+            console.log("new candidate cards");
+            updateGameBoard(round.blackCard, round.candidateCards, round.status);
+            changed = true;
+        }
+        if(changed){
+            console.log("change... updating localStorage");
+            setRound(round);
             updatePlayers(round.players, round.czar);
         }
-        changed = true;
-    }
-    if(localRound.status != round.status){
-        //New round status
-        console.log("new round status "+round.status);
-        if(round.winner){
-            updateGameBoard(round.blackCard, round.candidateCards, round.status, round.winner.name || null);
-        } else {
-            updateGameBoard(round.blackCard, round.candidateCards, round.status);
-        }
-        changed = true;
-        if(round.czar == playerID){
-            if(round.status == "select"){
-                $("#czarBox").html("Pick a winner!");
-                $("#mobileCzarBox").html("Pick a winner!");
-            }
-        }
-        //getHand();
-    }
-    if(localRound.candidateCards.length != round.candidateCards.length){
-        //New candidate cards
-        console.log("new candidate cards");
-        updateGameBoard(round.blackCard, round.candidateCards, round.status);
-        changed = true;
-    }
-    if(changed){
-        console.log("change... updating localStorage");
-        setRound(round);
-        updatePlayers(round.players, round.czar);
     }
 }
 
@@ -599,6 +614,10 @@ function getSubmitCards(){
     return JSON.parse(localStorage.getItem("cahsubmitcards"));
 }
 
+function getGameOver(){
+    return localStorage.getItem("cahgameover");
+}
+
 function setGameID(gameID){
     localStorage.setItem("cahgameid", gameID);
 }
@@ -613,6 +632,10 @@ function setOwnerID(playerID){
 
 function setRound(round){
     localStorage.setItem("cahround",JSON.stringify(round));
+}
+
+function setGameOver(){
+    localStorage.setItem("cahgameover",true);
 }
 
 function setSubmitCards(card){
@@ -632,4 +655,5 @@ function clearData()
     localStorage.removeItem("cahround");
     localStorage.removeItem("cahplayername");
     localStorage.removeItem("cahsubmitcards");
+    localStorage.removeItem("cahgameover");
 }
