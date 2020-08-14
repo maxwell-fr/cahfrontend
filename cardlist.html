@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/38e9318183.js" crossorigin="anonymous"></script>
+    
+    <title>Definitely Not CAH</title>
+  </head>
+  <body>
+    <div id="main">
+      <div class="accordion" id="accordionExample">
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script>
+      $(document).ready(function(){
+        $.ajax({
+          url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllCards",
+          method: "GET",
+          data: {
+              //gameID: gameID
+          },
+          success: function( result ) {
+            result.data.whiteCardDeck.sort(compare);
+
+            let setname = '12345';
+            let test = result.data.whiteCardDeck;
+
+            result.data.whiteCardDeck.forEach(card => {
+              if(card.set.name != setname){
+                if(setname != '12345'){
+                  $("#accordionExample").append('</div></div></div>');
+                }
+                setname = card.set.name;
+                $("#accordionExample").append('<div class="card">');
+                  $("#accordionExample").append('<div class="card-header" id="headingOne">');
+                    $("#accordionExample").append('<h2 class="mb-0">');
+                      $("#accordionExample").append('<button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#'+card.set._id+'" aria-expanded="true" aria-controls="collapseOne">');
+                        $("#accordionExample").append("<h2>"+setname+" - ("+card.set._id+")</h2>");
+                      $("#accordionExample").append('</button>');
+                    $("#accordionExample").append('</h2>');
+                  $("#accordionExample").append('</div>');
+                  $("#accordionExample").append('<div id="'+card.set._id+'" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">');
+                    $("#accordionExample").append('<div class="card-body">');
+              }
+              let lio = test.filter(c => c.text == card.text).length;
+              //if(lio > 1){
+                $("#accordionExample").append('<div class="playerCard card bg-light whiteCard float-left"><div class="card-body"><p class="card-text">('+lio+") "+card.text+'</p></div></div>');
+              //}
+            });
+          }
+        });
+      });
+
+      function compare(a, b) {
+        // Use toUpperCase() to ignore character casing
+        const setA = a.set.name.toUpperCase();
+        const setB = b.set.name.toUpperCase();
+
+        let comparison = 0;
+        if (setA > setB) {
+          comparison = 1;
+        } else if (setA < setB) {
+          comparison = -1;
+        }
+        return comparison;
+      }
+    </script>
+  </body>
+</html>
