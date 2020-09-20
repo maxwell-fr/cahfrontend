@@ -371,6 +371,25 @@ function submitWhiteCards(){
                 getHand();
             }
         });
+    } else {
+        var czarCard = getCzarCard();
+        if(czarCard){
+            $.ajax({
+                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/selectCandidateCard",
+                method: "POST",
+                data: {
+                    roundID: localRound._id,
+                    player: czarCard
+                },
+                success: function( result ) {
+                    updatePlayers(result.data.players, result.data.czar);
+                    $("#czarBox").addClass("d-none");
+                    $("#mobileCzarBox").addClass("d-none");
+                    $("#nextRound").removeClass("d-none");
+                    $("#mobileNextRound").removeClass("d-none");
+                }
+            });
+        }
     }
     clearSelection();
 }
@@ -442,7 +461,7 @@ function updateGameBoard(blackCard, whiteCards, status, winner = null){
     var blackCardHtml = '<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">'+blackCardText+'</p></div></div></div>';
     var candidateCardsHtml = "";
     whiteCards.forEach(function(candidateCard){
-        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-light whiteCard" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body">';
+        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-light whiteCard" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
         var cardNum = 1;
         candidateCard.cards.forEach(function(card){
             candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? "" : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
@@ -464,22 +483,37 @@ function selectCandidateCard(player){
     var playerID = getPlayerID();
     //var roundID = getRound()._id;
     if(localRound.czar == playerID){
-        addToConsole("Selected Candidate Card.");
-        $.ajax({
-            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/selectCandidateCard",
-            method: "POST",
-            data: {
-                roundID: localRound._id,
-                player: player
-            },
-            success: function( result ) {
-                updatePlayers(result.data.players, result.data.czar);
-                $("#czarBox").addClass("d-none");
-                $("#mobileCzarBox").addClass("d-none");
-                $("#nextRound").removeClass("d-none");
-                $("#mobileNextRound").removeClass("d-none");
-            }
-        });
+        if(!getCzarCard()){
+            addToConsole("Selected Candidate Card.");
+            //$("#czarBox").html("You are the Czar!");
+            $("#czarBox").addClass("d-none");
+            //$("#mobileCzarBox").html("You are the Czar!");
+            $("#mobileCzarBox").addClass("d-none");
+            $("#selectionButtons").removeClass("d-none");
+            $("#mobileSelectionButtons").removeClass("d-none");
+            $(".candidateCard").each(function(){
+                $(this).removeClass("bg-info");
+            });
+            $("#candidateCard"+player).addClass("bg-info");
+            $("#confirmSelection").attr("disabled",false);
+            $("#mobileConfirmSelection").attr("disabled",false);
+            setCzarCard(player);
+        }
+        // $.ajax({
+        //     url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/selectCandidateCard",
+        //     method: "POST",
+        //     data: {
+        //         roundID: localRound._id,
+        //         player: player
+        //     },
+        //     success: function( result ) {
+        //         updatePlayers(result.data.players, result.data.czar);
+        //         $("#czarBox").addClass("d-none");
+        //         $("#mobileCzarBox").addClass("d-none");
+        //         $("#nextRound").removeClass("d-none");
+        //         $("#mobileNextRound").removeClass("d-none");
+        //     }
+        // });
     }
 }
 
@@ -589,9 +623,14 @@ function clearSelection(){
         $(this).removeClass("bg-info");
         $(this).addClass("bg-light");
     });
+    $(".candidateCard").each(function(){
+        $(this).removeClass("bg-info");
+        //$(this).addClass("bg-light");
+    });
     $("#confirmSelection").attr("disabled",true);
     $("#mobileConfirmSelection").attr("disabled",true);
     localStorage.removeItem("cahsubmitcards");
+    localStorage.removeItem("cahczarselection");
 }
 
 function getGameID(){
@@ -648,6 +687,14 @@ function setSubmitCards(card){
     localStorage.setItem("cahsubmitcards",JSON.stringify(cards));
 }
 
+function setCzarCard(card){
+    localStorage.setItem("cahczarselection",card);
+}
+
+function getCzarCard(){
+    return localStorage.getItem("cahczarselection");
+}
+
 function clearData()
 {
     localStorage.removeItem("cahplayerid");
@@ -656,4 +703,5 @@ function clearData()
     localStorage.removeItem("cahplayername");
     localStorage.removeItem("cahsubmitcards");
     localStorage.removeItem("cahgameover");
+    localStorage.removeItem("cahczarselection");
 }
