@@ -334,8 +334,8 @@ function queueWhiteCard(cardID){
     if(localRound.czar != getPlayerID()){
         if(!cards || (cards.length < localRound.blackCard.pick && !cards.some(card => card == cardID))){
             console.log('queue white card');
-            $("#wc"+cardID).removeClass("bg-light");
-            $("#wc"+cardID).addClass("bg-info");
+            $("#wc"+cardID).removeClass("bg-primary");
+            $("#wc"+cardID).addClass("bg-success");
             setSubmitCards(cardID);
         }
         cards = getSubmitCards();
@@ -408,7 +408,7 @@ function getHand()
             $("#whiteHand").html("");
             var whiteHand = "";
             result.data.hand.forEach(function(card){
-                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-light whiteCard" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
+                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-primary whiteCard" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
             });
             $("#whiteHand").html(whiteHand);
         }
@@ -461,7 +461,7 @@ function updateGameBoard(blackCard, whiteCards, status, winner = null){
     var blackCardHtml = '<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">'+blackCardText+'</p></div></div></div>';
     var candidateCardsHtml = "";
     whiteCards.forEach(function(candidateCard){
-        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-light whiteCard" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
+        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-primary whiteCard" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
         var cardNum = 1;
         candidateCard.cards.forEach(function(card){
             candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? "" : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
@@ -492,9 +492,9 @@ function selectCandidateCard(player){
             $("#selectionButtons").removeClass("d-none");
             $("#mobileSelectionButtons").removeClass("d-none");
             $(".candidateCard").each(function(){
-                $(this).removeClass("bg-info");
+                $(this).removeClass("bg-success");
             });
-            $("#candidateCard"+player).addClass("bg-info");
+            $("#candidateCard"+player).addClass("bg-success");
             $("#confirmSelection").attr("disabled",false);
             $("#mobileConfirmSelection").attr("disabled",false);
             setCzarCard(player);
@@ -541,10 +541,10 @@ function doGameUpdate(round){
         if(localRound){
             //console.log(round.game);
             $(".whiteCardCount").each(function(){
-                $(this).html("<span class='badge badge-light border'>White Cards Remaining: "+round.game.whiteCards.length+"</span>");
+                $(this).html("<span class='badge badge-primary border'><i class='fas fa-layer-group'></i> "+round.game.whiteCards.length+"</span>");
             });
             $(".blackCardCount").each(function(){
-                $(this).html("<span class='badge badge-dark border'>Black Cards Remaining: "+round.game.blackCards.length+"</span>");
+                $(this).html("<span class='badge badge-dark border'><i class='fas fa-layer-group'></i> "+round.game.blackCards.length+"</span>");
             });
         }
         var changed = false;
@@ -620,12 +620,12 @@ function doGameUpdate(round){
 
 function clearSelection(){
     $(".whiteCard").each(function(){
-        $(this).removeClass("bg-info");
-        $(this).addClass("bg-light");
+        $(this).removeClass("bg-success");
+        $(this).addClass("bg-primary");
     });
     $(".candidateCard").each(function(){
-        $(this).removeClass("bg-info");
-        //$(this).addClass("bg-light");
+        $(this).removeClass("bg-success");
+        //$(this).addClass("bg-primary");
     });
     $("#confirmSelection").attr("disabled",true);
     $("#mobileConfirmSelection").attr("disabled",true);

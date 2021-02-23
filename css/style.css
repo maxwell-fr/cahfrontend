@@ -40,6 +40,14 @@
     }
 }
 
+body {
+    background-color: #121212;
+}
+
+hr {
+    border-top: 1px solid white;
+}
+
 .btn.disabled, .btn:disabled {
     opacity: 1;
     cursor: not-allowed;
@@ -54,6 +62,7 @@ body, h4, h5, h6 {
     -o-filter: brightness(85%);
     -ms-filter: brightness(85%);
     filter: brightness(85%);
+    cursor: pointer;
 }
 #submittedWhiteCards {
     background-color: #ffffff;
