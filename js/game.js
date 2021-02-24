@@ -177,7 +177,7 @@ $("#newGame").on('click', function(){
                 $("#mobileNextRound").removeClass("d-none");
                 $("#splash").addClass("d-none");
                 $("#game").removeClass("d-none");
-                $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
+                $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
                 setOwnerID(result.data.owner);
             }
         });
@@ -200,7 +200,7 @@ $("#continueGame").on('click', function(){
     $("#splash").addClass("d-none");
     $("#continueGameForm").addClass("d-none");
     $("#game").removeClass("d-none");
-    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
+    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
     var gameID = localStorage.getItem("lastcahgameid");
     localStorage.setItem("cahgameid",gameID);
     localStorage.removeItem("cahround");
@@ -246,7 +246,7 @@ $("#joinGame").on('click', function(){
             });
             $("#splash").addClass("d-none");
             $("#game").removeClass("d-none");
-            $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
+            $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
             setOwnerID(result.data.owner);
         }
     });
@@ -335,7 +335,9 @@ function queueWhiteCard(cardID){
         if(!cards || (cards.length < localRound.blackCard.pick && !cards.some(card => card == cardID))){
             console.log('queue white card');
             $("#wc"+cardID).removeClass("bg-primary");
+            $("#wc"+cardID).removeClass("border-light");
             $("#wc"+cardID).addClass("bg-success");
+            $("#wc"+cardID).addClass("border-warning");
             setSubmitCards(cardID);
         }
         cards = getSubmitCards();
@@ -408,7 +410,7 @@ function getHand()
             $("#whiteHand").html("");
             var whiteHand = "";
             result.data.hand.forEach(function(card){
-                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-primary whiteCard" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
+                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-primary whiteCard border border-light" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
             });
             $("#whiteHand").html(whiteHand);
         }
@@ -458,10 +460,10 @@ function updatePlayers(players, czar){
 
 function updateGameBoard(blackCard, whiteCards, status, winner = null){
     var blackCardText = blackCard.text.toString();
-    var blackCardHtml = '<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">'+blackCardText+'</p></div></div></div>';
+    var blackCardHtml = '<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">'+blackCardText+'</p></div></div></div>';
     var candidateCardsHtml = "";
     whiteCards.forEach(function(candidateCard){
-        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-primary whiteCard" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
+        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-primary whiteCard border border-light" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
         var cardNum = 1;
         candidateCard.cards.forEach(function(card){
             candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? "" : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
@@ -621,7 +623,9 @@ function doGameUpdate(round){
 function clearSelection(){
     $(".whiteCard").each(function(){
         $(this).removeClass("bg-success");
+        $(this).removeClass("border-warning");
         $(this).addClass("bg-primary");
+        $(this).addClass("border-light");
     });
     $(".candidateCard").each(function(){
         $(this).removeClass("bg-success");
