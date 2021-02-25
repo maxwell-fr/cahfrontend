@@ -537,6 +537,7 @@ function doGameUpdate(round){
     var gameID = getGameID();
     var localRound = getRound();
     if(round.game.winner){
+        updateGameBoard(round.blackCard, round.candidateCards, round.status, round.winner.name || null);
         console.log("Game winner",round.game.winner.name);
         gameOver(round.game.winner.name);
     } else {
