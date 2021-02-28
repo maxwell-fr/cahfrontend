@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="css/style.css" />
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/38e9318183.js" crossorigin="anonymous"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2/dist/confetti.browser.min.js"></script>
+
     <title>DeNCAH</title>
   </head>
   <body>
@@ -46,7 +47,7 @@
                                 <p id="namerow"></p>
                             </div>
                         </div>
-                        <div class="row d-none" id="gameDetails">
+                        <div class="row" id="gameDetails">
                             <div class="col-6">
                                 <a href="./cardlist.html" target="_blank">Card List</a><br/>
                                 <a href="https://discord.gg/JPH7WUCVEc" target="_blank">Discord</a>
@@ -111,7 +112,7 @@
                                             <button type="button" class="btn btn-info clearSelection" style="width:50%;" id="clearSelection"><i class="fas fa-eraser"></i> Clear Selection</button>
                                             <button type="button" class="btn btn-success confirmSelection" style="width:50%;" id="confirmSelection" disabled>Confirm <i class="far fa-share-square"></i></button>
                                         </div>
-                                        <div id="winnerDisplay" class="btn btn-block btn-success d-none">Someone has won the game!</div>
+                                        <div id="winnerDisplay" onclick="shootConfetti();" class="btn btn-block btn-success d-none">Someone has won the game!</div>
                                     </div>
                                 </div>
                             </div>
