@@ -136,51 +136,56 @@ $("#set_toggle_on").on('click', function(){
 });
 
 $("#newGame").on('click', function(){
-    var sets = [];
-    $(".set_switch").each(function() {
-        if($(this).is(":checked")){
-            sets.push($(this).prop("id"));
-        }
-    });
-
-    var time_limit = $("#time_limit").val();
-    var score_limit = $("#score_limit").val();
-    $("#whiteHand").html("");
-    //$("#gameBoard").html("");
-    var playerName = localStorage.getItem("cahplayername");
-    if(playerName.length == 0){
-        addToConsole("Player Name is required.");
-    } else {
-        $.ajax({
-            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/new",
-            method: "POST",
-            data: {
-                player: playerName,
-                sets: sets,
-                time_limit: time_limit,
-                score_limit: score_limit
-            },
-            success: function( result ) {
-                addToConsole("Started new game: "+result.data.gameID);
-                setGameID(result.data.gameID);
-                addToConsole("Your player ID: "+result.data.players[0]._id);
-                setPlayerID(result.data.players[0]._id);
-                updatePlayers(result.data.players, null);
-                $(".gameIDtag").each(function (){
-                    $(this).html("Game Link:");
-                    $(".gameIDlink").each(function (){
-                        $(this).val(window.location.href+"?id="+result.data.gameID);
-                    });
-                    $(".gameIDgroup").removeClass("d-none");
-                });
-                $("#nextRound").removeClass("d-none");
-                $("#mobileNextRound").removeClass("d-none");
-                $("#splash").addClass("d-none");
-                $("#game").removeClass("d-none");
-                $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
-                setOwnerID(result.data.owner);
+    if(!$(this).hasClass("disabled")){
+        $(this).addClass("disabled");
+        $(this).html("Starting Game <i class='fas fa-spinner fa-spin'></i>")
+        var sets = [];
+        $(".set_switch").each(function() {
+            if($(this).is(":checked")){
+                sets.push($(this).prop("id"));
             }
         });
+
+        var time_limit = $("#time_limit").val();
+        var score_limit = $("#score_limit").val();
+        $("#whiteHand").html("");
+        //$("#gameBoard").html("");
+        var playerName = localStorage.getItem("cahplayername");
+        if(playerName.length == 0){
+            addToConsole("Player Name is required.");
+        } else {
+            $.ajax({
+                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/new",
+                method: "POST",
+                data: {
+                    player: playerName,
+                    sets: sets,
+                    time_limit: time_limit,
+                    score_limit: score_limit
+                },
+                success: function( result ) {
+                    addToConsole("Started new game: "+result.data.gameID);
+                    setGameID(result.data.gameID);
+                    addToConsole("Your player ID: "+result.data.players[0]._id);
+                    setPlayerID(result.data.players[0]._id);
+                    updatePlayers(result.data.players, null);
+                    $(".gameIDtag").each(function (){
+                        $(this).html("Game Link:");
+                        $(".gameIDlink").each(function (){
+                            $(this).val(window.location.href+"?id="+result.data.gameID);
+                        });
+                        $(".gameIDgroup").removeClass("d-none");
+                    });
+                    $("#nextRound").html("Start Game");
+                    $("#nextRound").removeClass("d-none");
+                    $("#mobileNextRound").removeClass("d-none");
+                    $("#splash").addClass("d-none");
+                    $("#game").removeClass("d-none");
+                    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
+                    setOwnerID(result.data.owner);
+                }
+            });
+        }
     }
 });
 
@@ -262,6 +267,7 @@ $(".nextRound").on('click', function(){
         },
         success: function( result ) {
             doGameUpdate(result.data);
+            $("#nextRound").html("<i class='fas fa-angle-double-right'></i> Next Round <i class='fas fa-angle-double-right'></i>");
             $("#nextRound").addClass("d-none");
             $("#mobileNextRound").addClass("d-none");
         }
