@@ -12,7 +12,7 @@ $(document).ready(function(){
                 $("#options").append(`
                     <div class="custom-control custom-switch">
                         <input type="checkbox" class="set_switch custom-control-input" id="${set.id}" checked>
-                        <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-primary">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
+                        <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-light">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
                     </div>`);
             })
         }
@@ -340,10 +340,10 @@ function queueWhiteCard(cardID){
     if(localRound.czar != getPlayerID()){
         if(!cards || (cards.length < localRound.blackCard.pick && !cards.some(card => card == cardID))){
             console.log('queue white card');
-            $("#wc"+cardID).removeClass("bg-primary");
-            $("#wc"+cardID).removeClass("border-light");
-            $("#wc"+cardID).addClass("bg-success");
-            $("#wc"+cardID).addClass("border-warning");
+            $("#wc"+cardID).removeClass("bg-white");
+            $("#wc"+cardID).removeClass("border-primary");
+            $("#wc"+cardID).addClass("bg-primary");
+            $("#wc"+cardID).addClass("border-white");
             setSubmitCards(cardID);
         }
         cards = getSubmitCards();
@@ -416,7 +416,7 @@ function getHand()
             $("#whiteHand").html("");
             var whiteHand = "";
             result.data.hand.forEach(function(card){
-                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-primary whiteCard border border-light" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
+                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
             });
             $("#whiteHand").html(whiteHand);
         }
@@ -469,7 +469,7 @@ function updateGameBoard(blackCard, whiteCards, status, winner = null){
     var blackCardHtml = '<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">'+blackCardText+'</p></div></div></div>';
     var candidateCardsHtml = "";
     whiteCards.forEach(function(candidateCard){
-        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-primary whiteCard border border-light" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
+        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-white whiteCard border border-primary" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
         var cardNum = 1;
         candidateCard.cards.forEach(function(card){
             candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? "" : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
@@ -499,10 +499,14 @@ function selectCandidateCard(player){
             $("#mobileCzarBox").addClass("d-none");
             $("#selectionButtons").removeClass("d-none");
             $("#mobileSelectionButtons").removeClass("d-none");
-            $(".candidateCard").each(function(){
-                $(this).removeClass("bg-success");
-            });
-            $("#candidateCard"+player).addClass("bg-success");
+            // $(".candidateCard").each(function(){
+            //     $(this).removeClass("bg-primary");
+            //     $(this).removeClass("bg-primary");
+            // });
+            $("#candidateCard"+player).removeClass("bg-white");
+            $("#candidateCard"+player).removeClass("border-primary");
+            $("#candidateCard"+player).addClass("bg-primary");
+            $("#candidateCard"+player).addClass("border-white");
             $("#confirmSelection").attr("disabled",false);
             $("#mobileConfirmSelection").attr("disabled",false);
             setCzarCard(player);
@@ -564,7 +568,7 @@ function doGameUpdate(round){
         if(localRound){
             //console.log(round.game);
             $(".whiteCardCount").each(function(){
-                $(this).html("<span class='badge badge-primary border'><i class='fas fa-layer-group'></i> "+round.game.whiteCards.length+"</span>");
+                $(this).html("<span class='badge badge-light border' style='background-color: #fff;'><i class='fas fa-layer-group'></i> "+round.game.whiteCards.length+"</span>");
             });
             $(".blackCardCount").each(function(){
                 $(this).html("<span class='badge badge-dark border'><i class='fas fa-layer-group'></i> "+round.game.blackCards.length+"</span>");
@@ -643,14 +647,16 @@ function doGameUpdate(round){
 
 function clearSelection(){
     $(".whiteCard").each(function(){
-        $(this).removeClass("bg-success");
-        $(this).removeClass("border-warning");
-        $(this).addClass("bg-primary");
-        $(this).addClass("border-light");
+        $(this).removeClass("bg-primary");
+        $(this).removeClass("border-white");
+        $(this).addClass("bg-white");
+        $(this).addClass("border-primary");
     });
     $(".candidateCard").each(function(){
-        $(this).removeClass("bg-success");
-        //$(this).addClass("bg-primary");
+        $(this).removeClass("bg-primary");
+        $(this).removeClass("border-white");
+        $(this).addClass("bg-white");
+        $(this).addClass("border-primary");
     });
     $("#confirmSelection").attr("disabled",true);
     $("#mobileConfirmSelection").attr("disabled",true);
