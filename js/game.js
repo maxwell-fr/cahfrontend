@@ -334,25 +334,44 @@ function toggleFullscreen(event) {
     }
 }
 
-function queueWhiteCard(cardID){
+function queueWhiteCard(cardID, blankCard){
     var cards = getSubmitCards();
     var localRound = getRound();
     if(localRound.czar != getPlayerID()){
         if(!cards || (cards.length < localRound.blackCard.pick && !cards.some(card => card == cardID))){
-            console.log('queue white card');
             $("#wc"+cardID).removeClass("bg-white");
             $("#wc"+cardID).removeClass("border-primary");
             $("#wc"+cardID).addClass("bg-primary");
             $("#wc"+cardID).addClass("border-white");
-            setSubmitCards(cardID);
+            if(blankCard == 'true'){
+                $("#blankCardID").val(cardID);
+                $('#blankCardModal').modal('show');
+            } else {
+                setSubmitCards(cardID);
+            }
         }
-        cards = getSubmitCards();
-        if(cards.length == localRound.blackCard.pick){
-            $("#confirmSelection").attr("disabled",false);
-            $("#mobileConfirmSelection").attr("disabled",false);
-        } else if(cards.length > localRound.blackCard.pick) { 
-            clearSelection();
-        }
+        enableConfirm();
+    }
+}
+
+function queueCustomText(){
+    var cardID = $("#blankCardID").val();
+    var cardText = $("#blankCard").val();
+    setSubmitCards(cardID, cardText);
+    $('#blankCardModal').modal('hide');
+    $("#blankCardID").val("");
+    $("#blankCard").val("");
+    enableConfirm();
+}
+
+function enableConfirm(){
+    var localRound = getRound();
+    var cards = getSubmitCards();
+    if(cards.length == localRound.blackCard.pick){
+        $("#confirmSelection").attr("disabled",false);
+        $("#mobileConfirmSelection").attr("disabled",false);
+    } else if(cards.length > localRound.blackCard.pick) { 
+        clearSelection();
     }
 }
 
@@ -402,8 +421,7 @@ function submitWhiteCards(){
     clearSelection();
 }
 
-function getHand()
-{
+function getHand(){
     var playerID = getPlayerID();
     $.ajax({
         url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getHand",
@@ -416,7 +434,7 @@ function getHand()
             $("#whiteHand").html("");
             var whiteHand = "";
             result.data.hand.forEach(function(card){
-                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
+                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard(\''+card._id+'\',\''+card.blankCard+'\')"><div class="card-body"><p class="card-text">'+card.text+(card.blankCard ? ' this is a blank card?' : '')+'</p></div></div></div>';
             });
             $("#whiteHand").html(whiteHand);
         }
@@ -708,12 +726,20 @@ function setGameOver(){
     localStorage.setItem("cahgameover",true);
 }
 
-function setSubmitCards(card){
+function setSubmitCards(cardID, cardText = ''){
     var cards = getSubmitCards();
     if(!cards){
-        cards = [card];
+        cards = [
+            {
+                cardID: cardID,
+                cardText: cardText
+            }
+        ];
     } else {
-        cards.push(card);
+        cards.push({
+            cardID: cardID,
+            cardText: cardText
+        });
     }
     localStorage.setItem("cahsubmitcards",JSON.stringify(cards));
 }
