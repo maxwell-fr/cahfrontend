@@ -6,13 +6,12 @@ $(document).ready(function(){
             //gameID: gameID
         },
         success: function( result ) {
-            //console.log(result.data);
             var sets = result.data;
             sets.forEach(function(set){
                 $("#options").append(`
                     <div class="custom-control custom-switch">
                         <input type="checkbox" class="set_switch custom-control-input" id="${set.id}" checked>
-                        <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-light">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
+                        <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-dark">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
                     </div>`);
             })
         }
@@ -26,7 +25,7 @@ $(document).ready(function(){
         $("#nameForm").addClass("d-none");
         $("#continueGameForm").removeClass("d-none");
         $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
-        $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);namerow
+        $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
     }
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -35,7 +34,6 @@ $(document).ready(function(){
     if(vars.id){
         $("#openJoinButton").removeClass("collapsed");
         $("#collapseTwo").addClass("show");
-        //console.log(vars.id);
     }
     $("#gameID").val(vars.id);
 });
@@ -81,7 +79,6 @@ setInterval(function(){
                 },
                 success: function( result ) {
                     updatePlayers(result.data.players, null);
-                    //console.log(result.data.winner);
                     if(result.data.rounds.length > 0){
                         getLatestRound(gameID);
                     }
@@ -149,7 +146,6 @@ $("#newGame").on('click', function(){
         var time_limit = $("#time_limit").val();
         var score_limit = $("#score_limit").val();
         $("#whiteHand").html("");
-        //$("#gameBoard").html("");
         var playerName = localStorage.getItem("cahplayername");
         if(playerName.length == 0){
             addToConsole("Player Name is required.");
@@ -181,7 +177,14 @@ $("#newGame").on('click', function(){
                     $("#mobileNextRound").removeClass("d-none");
                     $("#splash").addClass("d-none");
                     $("#game").removeClass("d-none");
-                    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
+                    $("#blackCardHolder").html(
+                        `<div class="float-right mb-4 mt-4">
+                            <div class="playerCard card text-white bg-dark border border-light">
+                                <div class="card-body">
+                                    <p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p>
+                                </div>
+                            </div>
+                        </div>`);
                     setOwnerID(result.data.owner);
                 }
             });
@@ -205,7 +208,14 @@ $("#continueGame").on('click', function(){
     $("#splash").addClass("d-none");
     $("#continueGameForm").addClass("d-none");
     $("#game").removeClass("d-none");
-    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
+    $("#blackCardHolder").html(
+        `<div class="float-right mb-4 mt-4">
+            <div class="playerCard card text-white bg-dark border border-light">
+                <div class="card-body">
+                    <p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p>
+                </div>
+            </div>
+        </div>`);
     var gameID = localStorage.getItem("lastcahgameid");
     localStorage.setItem("cahgameid",gameID);
     localStorage.removeItem("cahround");
@@ -251,7 +261,14 @@ $("#joinGame").on('click', function(){
             });
             $("#splash").addClass("d-none");
             $("#game").removeClass("d-none");
-            $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
+            $("#blackCardHolder").html(
+                `<div class="float-right mb-4 mt-4">
+                    <div class="playerCard card text-white bg-dark border border-light">
+                        <div class="card-body">
+                            <p class="card-text">Just waiting for the next round to start. . . I wish they'd hurry the fuck up!</p>
+                        </div>
+                    </div>
+                </div>`);
             setOwnerID(result.data.owner);
         }
     });
@@ -299,8 +316,6 @@ $("#kickButton").on('click', function(e){
             playerID: playerID
         },
         success: function( result ) {
-            // doGameUpdate(result.data);
-            // getHand();
             console.log("kicked player");
             $('#playerOptions').modal('hide');        
         }
@@ -383,7 +398,6 @@ function submitWhiteCards(){
     var localRound = getRound();
     var cards = getSubmitCards();
     var roundID = localRound._id;
-    //var czar = localStorage.getItem("cahczar");
     if(localRound.czar != playerID){
         $.ajax({
             url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/submitWhiteCard",
@@ -434,7 +448,15 @@ function getHand(){
             $("#whiteHand").html("");
             var whiteHand = "";
             result.data.hand.forEach(function(card){
-                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard(\''+card._id+'\',\''+card.blankCard+'\')"><div class="card-body"><p class="card-text">'+card.text+(card.blankCard ? ' this is a blank card?' : '')+'</p></div></div></div>';
+                whiteHand = whiteHand + 
+                    `<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                        <div id="wc${card._id}" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard('${card._id}','${card.blankCard}')">
+                            <div class="card-body">
+                                <p class="card-text">${card.text}</p>
+                                <span style="position: absolute; font-size:9px; bottom:5px; right:10px;"><i class="fas fa-layer-group"></i> ${card.set.name}</span>
+                            </div>
+                        </div>
+                    </div>`;
             });
             $("#whiteHand").html(whiteHand);
         }
@@ -465,11 +487,6 @@ function updatePlayers(players, czar){
     var playerList = "";
     var playerID = getPlayerID();
     var owner = getOwnerID();
-    // if(czar){
-    //     localStorage.setItem("cahczar", czar);
-    // } else {
-    //     localStorage.removeItem("cahczar");
-    // }
     players.forEach(function(player){
         if(player._id == czar){
             playerList += '<li class="player list-group-item active" '+(playerID == owner && player._id != owner ? 'onClick="playerMenu(\''+player._id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(player._id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-light float-right mr-1">'+player.points+'</span><span class="badge badge-info float-right mr-1"><i class="fas fa-gavel"></i></span></li>';
@@ -484,13 +501,21 @@ function updatePlayers(players, czar){
 
 function updateGameBoard(blackCard, whiteCards, status, winner = null){
     var blackCardText = blackCard.text.toString();
-    var blackCardHtml = '<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark border border-light"><div class="card-body"><p class="card-text">'+blackCardText+'</p></div></div></div>';
+    var blackCardHtml = 
+        `<div class="float-right mb-4 mt-4">
+            <div class="playerCard card text-white bg-dark border border-light">
+                <div class="card-body">
+                    <p class="card-text">${blackCardText}</p>
+                    <span style="position: absolute; font-size:9px; bottom:5px; right:10px;"><i class="fas fa-layer-group"></i> ${blackCard.set.name}</span>
+                </div>
+            </div>
+        </div>`;
     var candidateCardsHtml = "";
     whiteCards.forEach(function(candidateCard){
-        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-white whiteCard border border-primary" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
+        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-white whiteCard '+(status == 'submit' ? 'whitePaper' : '')+' border border-primary" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
         var cardNum = 1;
         candidateCard.cards.forEach(function(card){
-            candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? "" : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
+            candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? '<span style="position: absolute; font-size:20px; bottom:10px; right:10px;"><i class="fas fa-clone"></i> DeNCAH</span>' : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
             cardNum++;
         });
         candidateCardsHtml += ((candidateCard.winner) ? ' <span class="badge badge-success"><i class="fas fa-award fa-lg"></i> &nbsp;'+winner+'</span>' : '')+'</div></div></div>';
@@ -498,29 +523,19 @@ function updateGameBoard(blackCard, whiteCards, status, winner = null){
     $("#blackCardHolder").html(blackCardHtml);
     $("#gameBoard").html(candidateCardsHtml);
     var localRound = getRound();
-    //console.log("round",localRound);
     $("#candidateCount").html(whiteCards.length.toString()+"/"+(localRound.players.length - 1).toString());
-    //$("#candidateCount").html(whiteCards.length+"/"+localRound.players.length-1);
 }
 
 function selectCandidateCard(player){
     var localRound = getRound();
-    //var czar = localStorage.getItem("cahczar");
     var playerID = getPlayerID();
-    //var roundID = getRound()._id;
     if(localRound.czar == playerID){
         if(!getCzarCard()){
             addToConsole("Selected Candidate Card.");
-            //$("#czarBox").html("You are the Czar!");
             $("#czarBox").addClass("d-none");
-            //$("#mobileCzarBox").html("You are the Czar!");
             $("#mobileCzarBox").addClass("d-none");
             $("#selectionButtons").removeClass("d-none");
             $("#mobileSelectionButtons").removeClass("d-none");
-            // $(".candidateCard").each(function(){
-            //     $(this).removeClass("bg-primary");
-            //     $(this).removeClass("bg-primary");
-            // });
             $("#candidateCard"+player).removeClass("bg-white");
             $("#candidateCard"+player).removeClass("border-primary");
             $("#candidateCard"+player).addClass("bg-primary");
@@ -529,21 +544,6 @@ function selectCandidateCard(player){
             $("#mobileConfirmSelection").attr("disabled",false);
             setCzarCard(player);
         }
-        // $.ajax({
-        //     url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/selectCandidateCard",
-        //     method: "POST",
-        //     data: {
-        //         roundID: localRound._id,
-        //         player: player
-        //     },
-        //     success: function( result ) {
-        //         updatePlayers(result.data.players, result.data.czar);
-        //         $("#czarBox").addClass("d-none");
-        //         $("#mobileCzarBox").addClass("d-none");
-        //         $("#nextRound").removeClass("d-none");
-        //         $("#mobileNextRound").removeClass("d-none");
-        //     }
-        // });
     }
 }
 
@@ -584,7 +584,6 @@ function doGameUpdate(round){
         gameOver(round.game.winner.name);
     } else {
         if(localRound){
-            //console.log(round.game);
             $(".whiteCardCount").each(function(){
                 $(this).html("<span class='badge badge-light border' style='background-color: #fff;'><i class='fas fa-layer-group'></i> "+round.game.whiteCards.length+"</span>");
             });
@@ -595,7 +594,6 @@ function doGameUpdate(round){
         var changed = false;
         if(!localRound){
             console.log("Game started");
-            //console.log(round);
             setRound(round);
             updateGameBoard(round.blackCard, round.candidateCards, round.status);
             getHand();
@@ -647,7 +645,6 @@ function doGameUpdate(round){
                     $("#mobileCzarBox").html("Pick a winner!");
                 }
             }
-            //getHand();
         }
         if(localRound.candidateCards.length != round.candidateCards.length){
             //New candidate cards
@@ -667,13 +664,17 @@ function clearSelection(){
     $(".whiteCard").each(function(){
         $(this).removeClass("bg-primary");
         $(this).removeClass("border-white");
+        //$(this).removeClass("bluePaper");
         $(this).addClass("bg-white");
+        //$(this).addClass("whitePaper");
         $(this).addClass("border-primary");
     });
     $(".candidateCard").each(function(){
         $(this).removeClass("bg-primary");
         $(this).removeClass("border-white");
+        //$(this).removeClass("bluePaper");
         $(this).addClass("bg-white");
+        //$(this).addClass("whitePaper");
         $(this).addClass("border-primary");
     });
     $("#confirmSelection").attr("disabled",true);
