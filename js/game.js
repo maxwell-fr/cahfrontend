@@ -1,21 +1,32 @@
 $(document).ready(function(){
-    $.ajax({
-        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllSets",
-        method: "GET",
-        data: {
-            //gameID: gameID
-        },
-        success: function( result ) {
-            var sets = result.data;
-            sets.forEach(function(set){
-                $("#options").append(`
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="set_switch custom-control-input" id="${set.id}" checked>
-                        <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-dark">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
-                    </div>`);
-            })
-        }
-    });
+    try {
+        $.ajax({
+            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllSets",
+            method: "GET",
+            data: {
+                //gameID: gameID
+            },
+            success: function( result ) {
+                var sets = result.data;
+                sets.forEach(function(set){
+                    $("#options").append(`
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="set_switch custom-control-input" id="${set.id}" checked>
+                            <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-dark">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
+                        </div>`);
+                })
+            },
+            statusCode: {
+                502: function() {
+                    $("#nameError").removeClass("d-none");
+                    $("#nameError").html("<i class='fas fa-plug'></i> Looks like the server is down... The game might not work.");
+                }
+            }
+        });
+    } catch(err) {
+        $("#nameError").removeClass("d-none");
+        $("#nameError").html("<i class='fas fa-plug'></i> Looks like the server is down... The game might not work.");
+    }
     var gameID = getGameID();
     if(!gameID || getGameOver()){
         clearData();
@@ -114,11 +125,21 @@ $("#playersIcon").on('click', function(){
 });
 
 $("#nameButton").on('click', function(){
-    localStorage.setItem("cahplayername",$("#playerName").val().trim());
-    $("#nameForm").addClass("d-none");
-    $("#newGameForm").removeClass("d-none");
-    $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
-    $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
+    var name = $("#playerName").val().trim();
+    if(name.length < 2){
+        $("#nameError").removeClass("d-none");
+        $("#nameError").html("Your name is too short. Sometimes size does matter...");
+    } else if(name.length > 30){
+        $("#nameError").removeClass("d-none");
+        $("#nameError").html("Your name is too long. We're gonna need you to make that a little shorter mmkay?");
+    } else {
+        localStorage.setItem("cahplayername",name);
+        $("#nameForm").addClass("d-none");
+        $("#nameError").addClass("d-none");
+        $("#newGameForm").removeClass("d-none");
+        $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
+        $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
+    }
 });
 
 $("#set_toggle_off").on('click', function(){
