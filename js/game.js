@@ -313,6 +313,30 @@ $(".nextRound").on('click', function(){
     
 });
 
+$("#mulliganConfirm").on('click', function(){
+    var playerID = getPlayerID();
+    var gameID = getGameID();
+    $.ajax({
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/mulligan",
+        method: "POST",
+        data: {
+            playerID: playerID,
+            gameID: gameID
+        },
+        success: function( result ) {
+            console.log(result.data);
+            if(result.data.mulligans == 0){
+                console.log("should remove?");
+                $("#mulliganButton").addClass('d-none');
+            } else {
+                console.log("wrong mulligans = "+result.data.mulligans);
+            }
+            $('#mulliganModal').modal('hide');
+            getHand();
+        }
+    });
+});
+
 $(".clearSelection").on('click', function(){
     clearSelection();
 });
@@ -465,7 +489,6 @@ function getHand(){
             playerID: playerID
         },
         success: function( result ) {
-            addToConsole("Aquired your hand.");
             $("#whiteHand").html("");
             var whiteHand = "";
             result.data.hand.forEach(function(card){
@@ -480,6 +503,9 @@ function getHand(){
                     </div>`;
             });
             $("#whiteHand").html(whiteHand);
+            if(result.data.mulligans > 0){
+                $("#mulliganButton").removeClass('d-none');
+            }
         }
     });
 }
@@ -716,6 +742,10 @@ function getPlayerID(){
     return localStorage.getItem("cahplayerid");
 }
 
+function getMulligans(){
+    return localStorage.getItem("cahmulligans");
+}
+
 function getRound(){
     return JSON.parse(localStorage.getItem("cahround"));
 }
@@ -734,6 +764,10 @@ function setGameID(gameID){
 
 function setPlayerID(playerID){
     localStorage.setItem("cahplayerid", playerID);
+}
+
+function setMulligans(mulligans){
+    localStorage.setItem("cahmulligans", mulligans);
 }
 
 function setOwnerID(playerID){
@@ -777,6 +811,7 @@ function getCzarCard(){
 function clearData()
 {
     localStorage.removeItem("cahplayerid");
+    localStorage.removeItem("cahmulligans");
     localStorage.removeItem("cahgameid");
     localStorage.removeItem("cahround");
     localStorage.removeItem("cahplayername");
