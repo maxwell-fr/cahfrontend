@@ -168,6 +168,13 @@
                   
                       <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#newGameForm">
                         <div class="card-body">
+                            <div class="row">
+                                <label for="game_name">Name of Game:</label>
+                            </div>
+                            <div class="row">
+                                <input type="text" class="form-control" id="game_name" />
+                            </div>
+                            <hr/>
                             <div id="sets" class="col-12 accordion">
                                 <button class="btn btn-link text-light btn-block collapsed" type="button" data-toggle="collapse" data-target="#options" aria-expanded="false" aria-controls="options">
                                     <h3>Choose Sets <i class="fas fa-caret-down"></i></h3>
@@ -240,11 +247,11 @@
                       </div>
                       <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#newGameForm">
                         <div class="card-body">
-                            <div class="col-12">
-                                Paste the game ID below. If you clicked a link this should be filled in for you!
+                            <div class="col-12" id="joinGameText">
+                                
                             </div>
                             <div class="col-12">
-                                <input type="text" class="form-control" id="gameID" />
+                                <input type="hidden" class="form-control" id="gameID" />
                             </div>
                             <div class="col-12">
                                 <button class="btn btn-primary btn-block mt-2" id="joinGame">Join Game</button>

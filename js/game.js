@@ -45,8 +45,19 @@ $(document).ready(function(){
     if(vars.id){
         $("#openJoinButton").removeClass("collapsed");
         $("#collapseTwo").addClass("show");
+        $("#gameID").val(vars.id);
+        $.ajax({
+            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getGame",
+            method: "POST",
+            data: {
+                gameID: vars.id
+            },
+            success: function( result ) {
+                $("#joinGameText").html("You've been invited to a game called "+result.data.name+". Lucky you!");
+            }
+        });
     }
-    $("#gameID").val(vars.id);
+    
 });
 
 $(".copyGameID").on('click', function() {
@@ -139,6 +150,7 @@ $("#nameButton").on('click', function(){
         $("#newGameForm").removeClass("d-none");
         $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
         $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
+        $("#game_name").val(name+"'s DeNCAH game");
     }
 });
 
@@ -166,6 +178,7 @@ $("#newGame").on('click', function(){
 
         var time_limit = $("#time_limit").val();
         var score_limit = $("#score_limit").val();
+        var game_name = $("#game_name").val();
         $("#whiteHand").html("");
         var playerName = localStorage.getItem("cahplayername");
         if(playerName.length == 0){
@@ -178,7 +191,8 @@ $("#newGame").on('click', function(){
                     player: playerName,
                     sets: sets,
                     time_limit: time_limit,
-                    score_limit: score_limit
+                    score_limit: score_limit,
+                    name: game_name
                 },
                 success: function( result ) {
                     addToConsole("Started new game: "+result.data.gameID);
