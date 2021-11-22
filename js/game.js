@@ -1,7 +1,9 @@
 
 //set the base url for the various endpoints
 //all API calls will start with this URL, e.g., `${CONFIG_BASEURL}/v1/games/getGame`
-const CONFIG_BASEURL = "http://localhost:3000";
+const CONFIG_API_HOST = "localhost";
+const CONFIG_BASEURL = `http://${CONFIG_API_HOST}:3000`;
+const CONFIG_WSURL = `ws://${CONFIG_API_HOST}:38080`;
 
 $(document).ready(function(){
     $.ajax({
@@ -73,35 +75,35 @@ var namearray = [
     "I'm sure you're very nice!"
 ];
 
-setInterval(function(){
-    var gameID = getGameID();
-    if(gameID){
-        $("#gameDetails").removeClass("d-none");
-        if(!getRound()){
-            $.ajax({
-                url: `${CONFIG_BASEURL}/v1/games/getGame`,
-                method: "POST",
-                data: {
-                    gameID: gameID
-                },
-                success: function( result ) {
-                    updatePlayers(result.data.players, null);
-                    //console.log(result.data.winner);
-                    if(result.data.rounds.length > 0){
-                        getLatestRound(gameID);
-                    }
-                }
-            });
-        } else {
-            getLatestRound(gameID);
-        }
-    } else {
-        $("#selectionButtons").addClass("d-none");
-        $("#mobileSelectionButtons").addClass("d-none");
-        $("#playerList").html("");
-        $("#mobilePlayerList").html("");
-    }
-}, 1000);
+// setInterval(function(){
+//     var gameID = getGameID();
+//     if(gameID){
+//         $("#gameDetails").removeClass("d-none");
+//         if(!getRound()){
+//             $.ajax({
+//                 url: `${CONFIG_BASEURL}/v1/games/getGame`,
+//                 method: "POST",
+//                 data: {
+//                     gameID: gameID
+//                 },
+//                 success: function( result ) {
+//                     updatePlayers(result.data.players, null);
+//                     //console.log(result.data.winner);
+//                     if(result.data.rounds.length > 0){
+//                         getLatestRound(gameID);
+//                     }
+//                 }
+//             });
+//         } else {
+//             getLatestRound(gameID);
+//         }
+//     } else {
+//         $("#selectionButtons").addClass("d-none");
+//         $("#mobileSelectionButtons").addClass("d-none");
+//         $("#playerList").html("");
+//         $("#mobilePlayerList").html("");
+//     }
+// }, 1000);
 
 $("#menuIcon").on('click', function(){
     if($('#mobileInfoRow').hasClass("d-none")){
@@ -184,6 +186,7 @@ $("#newGame").on('click', function(){
                 $("#game").removeClass("d-none");
                 $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
                 setOwnerID(result.data.owner);
+                start_listening(getGameID());
             }
         });
     }
@@ -211,6 +214,7 @@ $("#continueGame").on('click', function(){
     localStorage.removeItem("cahround");
     localStorage.removeItem("lastcahgameid");
     getLatestRound(gameID);
+    start_listening(getGameID());
 });
 
 $("#joinGame").on('click', function(){
@@ -253,6 +257,7 @@ $("#joinGame").on('click', function(){
             $("#game").removeClass("d-none");
             $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
             setOwnerID(result.data.owner);
+            start_listening(getGameID());
         }
     });
 });
@@ -367,6 +372,7 @@ function submitWhiteCards(){
             url: `${CONFIG_BASEURL}/v1/games/submitWhiteCard`,
             method: "POST",
             data: {
+                gameID: getGameID(),
                 roundID: roundID,
                 whiteCards: cards,
                 playerID: playerID
@@ -390,7 +396,7 @@ function getHand()
             playerID: playerID
         },
         success: function( result ) {
-            addToConsole("Aquired your hand.");
+            addToConsole("Acquired your hand.");
             $("#whiteHand").html("");
             var whiteHand = "";
             result.data.hand.forEach(function(card){
@@ -653,12 +659,33 @@ function setSubmitCards(card){
     localStorage.setItem("cahsubmitcards",JSON.stringify(cards));
 }
 
-function clearData()
-{
+function clearData(){
     localStorage.removeItem("cahplayerid");
     localStorage.removeItem("cahgameid");
     localStorage.removeItem("cahround");
     localStorage.removeItem("cahplayername");
     localStorage.removeItem("cahsubmitcards");
     localStorage.removeItem("cahgameover");
+}
+var cah_ws = null;
+function start_listening(gameID) {
+        cah_ws = new WebSocket(CONFIG_WSURL);
+        cah_ws.onopen = function () {
+            console.log("ws newly opened for " + gameID);
+            cah_ws.send(JSON.stringify({gameID: gameID, action: "register"}));
+            cah_ws.onmessage = handle_ws_message;
+        }
+
+}
+
+function handle_ws_message(incoming) {
+    console.log("ws msg received: " + incoming.data);
+    try {
+        const game_state = JSON.parse(incoming.data);
+
+        doGameUpdate(game_state);
+    }
+    catch (e) {
+        console.log("ws message handler error: " + e);
+    }
 }
