@@ -220,6 +220,7 @@ $("#continueGame").on('click', function(){
 $("#joinGame").on('click', function(){
     var playerName = localStorage.getItem("cahplayername");
     var gameID = $("#gameID").val().trim();
+    start_listening(gameID);
     $.ajax({
         url: `${CONFIG_BASEURL}/v1/games/join`,
         method: "POST",
@@ -234,7 +235,7 @@ $("#joinGame").on('click', function(){
             setGameID(result.data.gameID);
             addToConsole("player ID: "+result.data.players[result.data.players.length-1]._id);
             setPlayerID(result.data.players[result.data.players.length-1]._id);
-            updatePlayers(result.data.players, null);
+            //updatePlayers(result.data.players, null);
             localStorage.removeItem("round");
             $(".gameIDtag").each(function (){
                 $(this).html("Game Link:");
@@ -257,7 +258,6 @@ $("#joinGame").on('click', function(){
             $("#game").removeClass("d-none");
             $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
             setOwnerID(result.data.owner);
-            start_listening(getGameID());
         }
     });
 });
@@ -683,7 +683,18 @@ function handle_ws_message(incoming) {
     try {
         const game_state = JSON.parse(incoming.data);
 
-        doGameUpdate(game_state);
+        if(game_state.info != undefined)
+        {
+            console.log("Server says: " + game_state.info);
+        }
+        else {
+            if (getRound()) {
+                doGameUpdate(game_state);
+            } else {
+                updatePlayers(game_state.players, null);
+                doGameUpdate(game_state);
+            }
+        }
     }
     catch (e) {
         console.log("ws message handler error: " + e);
