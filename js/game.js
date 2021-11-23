@@ -372,13 +372,13 @@ function submitWhiteCards(){
             url: `${CONFIG_BASEURL}/v1/games/submitWhiteCard`,
             method: "POST",
             data: {
-                gameID: getGameID(),
+                gameID: gameID,
                 roundID: roundID,
                 whiteCards: cards,
                 playerID: playerID
             },
             success: function( result ) {
-                doGameUpdate(result.data);
+                //doGameUpdate(result.data);
                 getHand();
             }
         });
@@ -474,17 +474,19 @@ function selectCandidateCard(player){
     //var czar = localStorage.getItem("cahczar");
     var playerID = getPlayerID();
     //var roundID = getRound()._id;
+    let gameID = getGameID();
     if(localRound.czar == playerID){
         addToConsole("Selected Candidate Card.");
         $.ajax({
             url: `${CONFIG_BASEURL}/v1/games/selectCandidateCard`,
             method: "POST",
             data: {
+                gameID: gameID,
                 roundID: localRound._id,
                 player: player
             },
             success: function( result ) {
-                updatePlayers(result.data.players, result.data.czar);
+                //updatePlayers(result.data.players, result.data.czar);
                 $("#czarBox").addClass("d-none");
                 $("#mobileCzarBox").addClass("d-none");
                 $("#nextRound").removeClass("d-none");
@@ -663,7 +665,7 @@ function clearData(){
     localStorage.removeItem("cahplayerid");
     localStorage.removeItem("cahgameid");
     localStorage.removeItem("cahround");
-    localStorage.removeItem("cahplayername");
+    //localStorage.removeItem("cahplayername");
     localStorage.removeItem("cahsubmitcards");
     localStorage.removeItem("cahgameover");
 }
