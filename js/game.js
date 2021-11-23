@@ -5,6 +5,9 @@ const CONFIG_API_HOST = "localhost";
 const CONFIG_BASEURL = `http://${CONFIG_API_HOST}:3000`;
 const CONFIG_WSURL = `ws://${CONFIG_API_HOST}:38080`;
 
+let cah_ws = null;
+start_talking();
+
 $(document).ready(function(){
     $.ajax({
         url: `${CONFIG_BASEURL}/v1/games/getAllSets`,
@@ -186,7 +189,7 @@ $("#newGame").on('click', function(){
                 $("#game").removeClass("d-none");
                 $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
                 setOwnerID(result.data.owner);
-                start_listening(getGameID());
+                start_talking(getPlayerID());
             }
         });
     }
@@ -213,54 +216,47 @@ $("#continueGame").on('click', function(){
     localStorage.setItem("cahgameid",gameID);
     localStorage.removeItem("cahround");
     localStorage.removeItem("lastcahgameid");
+    start_talking(getPlayerID());
     getLatestRound(gameID);
-    start_listening(getGameID());
 });
 
-$("#joinGame").on('click', function(){
+$("#joinGame").on('click', function() {
     var playerName = localStorage.getItem("cahplayername");
     var gameID = $("#gameID").val().trim();
-    start_listening(gameID);
-    $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/join`,
-        method: "POST",
-        data: {
-            player: playerName,
-            gameID: gameID
-        },
-        success: function( result ) {
-            $("#whiteHand").html("");
-            $("#gameBoard").html("");
-            addToConsole("Joined game ID: "+result.data.gameID);
-            setGameID(result.data.gameID);
-            addToConsole("player ID: "+result.data.players[result.data.players.length-1]._id);
-            setPlayerID(result.data.players[result.data.players.length-1]._id);
-            //updatePlayers(result.data.players, null);
-            localStorage.removeItem("round");
-            $(".gameIDtag").each(function (){
-                $(this).html("Game Link:");
-                /* 
-                    If they joined via a gameID link we want to grab the URL up the the '?' 
-                    then add the gameID to avoid the gameID being added on twice.
-                */
-                if(window.location.href.indexOf("?") > 0){
-                    $(".gameIDlink").each(function () {
-                        $(this).val(window.location.href.substr(0,window.location.href.indexOf("?"))+"?id="+result.data.gameID);
-                    });
-                } else {
-                    $(".gameIDlink").each(function () {
-                        $(this).val(window.location.href+"?id="+result.data.gameID);
-                    });
-                }
-                $(".gameIDgroup").removeClass("d-none");
-            });
-            $("#splash").addClass("d-none");
-            $("#game").removeClass("d-none");
-            $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
-            setOwnerID(result.data.owner);
-        }
-    });
+    send_ws_message("join", {gameID: gameID, player: playerName});
 });
+
+function ws_join(join_data) {
+    $("#whiteHand").html("");
+    $("#gameBoard").html("");
+    addToConsole("Joined game ID: "+join_data.gameID);
+    setGameID(join_data.gameID);
+    //addToConsole("player ID: "+join_data.players[result.data.players.length-1]._id);
+    //setPlayerID(result.data.players[result.data.players.length-1]._id);
+    updatePlayers(join_data.players, null);
+    localStorage.removeItem("round");
+    $(".gameIDtag").each(function (){
+        $(this).html("Game Link:");
+        /*
+            If they joined via a gameID link we want to grab the URL up the the '?'
+            then add the gameID to avoid the gameID being added on twice.
+        */
+        if(window.location.href.indexOf("?") > 0){
+            $(".gameIDlink").each(function () {
+                $(this).val(window.location.href.substr(0,window.location.href.indexOf("?"))+"?id="+join_data.gameID);
+            });
+        } else {
+            $(".gameIDlink").each(function () {
+                $(this).val(window.location.href+"?id="+join_data.gameID);
+            });
+        }
+        $(".gameIDgroup").removeClass("d-none");
+    });
+    $("#splash").addClass("d-none");
+    $("#game").removeClass("d-none");
+    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Just waiting for the next round to start. . . I wish they\'d hurry the fuck up!</p></div></div></div>');
+    setOwnerID(join_data.owner);
+}
 
 $(".nextRound").on('click', function(){
     var gameID = getGameID();
@@ -669,36 +665,51 @@ function clearData(){
     localStorage.removeItem("cahsubmitcards");
     localStorage.removeItem("cahgameover");
 }
-var cah_ws = null;
-function start_listening(gameID) {
+
+function start_talking() {
         cah_ws = new WebSocket(CONFIG_WSURL);
         cah_ws.onopen = function () {
-            console.log("ws newly opened for " + gameID);
-            cah_ws.send(JSON.stringify({gameID: gameID, action: "register"}));
+            //console.log("ws newly opened for " + player_id);
+            //cah_ws.send(JSON.stringify({player_id: player_id, action: "register"}));
             cah_ws.onmessage = handle_ws_message;
         }
+}
 
+
+function send_ws_message(action, payload) {
+    cah_ws.send(JSON.stringify({action: action, player_id: getPlayerID(), payload: payload}));
 }
 
 function handle_ws_message(incoming) {
-    console.log("ws msg received: " + incoming.data);
     try {
-        const game_state = JSON.parse(incoming.data);
-
-        if(game_state.info != undefined)
-        {
-            console.log("Server says: " + game_state.info);
+        const data = JSON.parse(incoming.data);
+        if(data.action === undefined) {
+            console.log("Actionless server message: " + incoming.data);
         }
         else {
-            if (getRound()) {
-                doGameUpdate(game_state);
-            } else {
-                updatePlayers(game_state.players, null);
-                doGameUpdate(game_state);
+            switch(data.action) {
+                case "info" :
+                    console.log("Server says: " + data.payload);
+                    break;
+                case "hand" :
+                    console.log("Hand message: " + data.payload)
+                    break;
+                case "round" :
+                    console.log("Round message: " + data.payload);
+                    doGameUpdate(data);
+                    break;
+                case "join" :
+                    console.log("Join message: " + data.payload);
+                    setPlayerID(data.player_id);
+                    ws_join(data.payload);
+                    //updatePlayers(data.payload);
+                    break;
+                default:
+                    console.log("Other message:" + data);
             }
         }
     }
     catch (e) {
-        console.log("ws message handler error: " + e);
+        console.log("ws message handler caught something: " + e);
     }
 }
