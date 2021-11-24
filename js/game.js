@@ -357,44 +357,31 @@ function submitWhiteCards(){
     var cards = getSubmitCards();
     var roundID = localRound._id;
     //var czar = localStorage.getItem("cahczar");
-    if(localRound.czar != playerID){
-        $.ajax({
-            url: `${CONFIG_BASEURL}/v1/games/submitWhiteCard`,
-            method: "POST",
-            data: {
-                gameID: gameID,
-                roundID: roundID,
-                whiteCards: cards,
-                playerID: playerID
-            },
-            success: function( result ) {
-                //doGameUpdate(result.data);
-                getHand();
-            }
+    if(localRound.czar != playerID) {
+        send_ws_message("submit_white", {
+            gameID: gameID,
+            roundID: roundID,
+            whiteCards: cards,
+            playerID: playerID
         });
     }
     clearSelection();
 }
 
-function getHand()
+function ws_hand(hand)
 {
-    var playerID = getPlayerID();
-    $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/getHand`,
-        method: "POST",
-        data: {
-            playerID: playerID
-        },
-        success: function( result ) {
-            addToConsole("Acquired your hand.");
-            $("#whiteHand").html("");
-            var whiteHand = "";
-            result.data.hand.forEach(function(card){
-                whiteHand = whiteHand + '<div class="col-sm-6 col-md-4 col-lg-3 mb-4"><div id="wc'+card._id+'" class="playerCard card bg-light whiteCard" onClick="queueWhiteCard(\''+card._id+'\')"><div class="card-body"><p class="card-text">'+card.text+'</p></div></div></div>';
-            });
-            $("#whiteHand").html(whiteHand);
-        }
+    addToConsole("Acquired your hand.");
+    $("#whiteHand").html("");
+    var whiteHand = "";
+    hand.forEach(function(card){
+        whiteHand = whiteHand +
+            '<div class="col-sm-6 col-md-4 col-lg-3 mb-4">' +
+            '<div id="wc'+card._id +'" class="playerCard card bg-light whiteCard" ' +
+            'onClick="queueWhiteCard(\''+card._id +
+            '\')"><div class="card-body"><p class="card-text">'+card.text +
+            '</p></div></div></div>';
     });
+    $("#whiteHand").html(whiteHand);
 }
 
 function addToConsole(text){
@@ -522,7 +509,6 @@ function doGameUpdate(round){
             //console.log(round);
             setRound(round);
             updateGameBoard(round.blackCard, round.candidateCards, round.status);
-            getHand();
             updatePlayers(round.players, round.czar);
             if(round.czar != playerID){
                 $("#selectionButtons").removeClass("d-none");
@@ -536,7 +522,6 @@ function doGameUpdate(round){
         if(localRound._id != round._id){
             //new round
             updateGameBoard(round.blackCard, round.candidateCards, round.status);
-            getHand();
             clearSelection();
             if(round.czar != playerID){
                 $("#selectionButtons").removeClass("d-none");
@@ -655,7 +640,7 @@ function clearData(){
     localStorage.removeItem("cahplayerid");
     localStorage.removeItem("cahgameid");
     localStorage.removeItem("cahround");
-    //localStorage.removeItem("cahplayername");
+    localStorage.removeItem("cahplayername");
     localStorage.removeItem("cahsubmitcards");
     localStorage.removeItem("cahgameover");
 }
@@ -704,6 +689,10 @@ function handle_ws_message(incoming) {
                 case "update":
                     console.log("Update message: " + JSON.stringify(data.payload));
                     updatePlayers(data.payload.players);
+                    break;
+                case "hand":
+                    console.log("Hand message: " + JSON.stringify(data.payload));
+                    ws_hand(data.payload);
                     break;
                 default:
                     console.log("Other message:" + data);
