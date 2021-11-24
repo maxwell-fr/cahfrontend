@@ -683,24 +683,27 @@ function handle_ws_message(incoming) {
         else {
             switch(data.action) {
                 case "info" :
-                    console.log("Server says: " + data.payload);
+                    console.log("Server says: " + JSON.stringify(data.payload));
                     break;
                 case "create" :
-                    console.log("Create message: " + data.payload);
+                    console.log("Create message: " + JSON.stringify(data.payload));
                     ws_create(data.payload);
                     break;
                 case "hand" :
-                    console.log("Hand message: " + data.payload)
+                    console.log("Hand message: " + JSON.stringify(data.payload))
                     break;
                 case "round" :
-                    console.log("Round message: " + data.payload);
+                    console.log("Round message: " + JSON.stringify(data.payload));
                     doGameUpdate(data);
                     break;
                 case "join" :
-                    console.log("Join message: " + data.payload);
+                    console.log("Join message: " + JSON.stringify(data.payload));
                     setPlayerID(data.player_id);
                     ws_join(data.payload);
-                    //updatePlayers(data.payload);
+                    break;
+                case "update":
+                    console.log("Update message: " + JSON.stringify(data.payload));
+                    updatePlayers(data.payload.players);
                     break;
                 default:
                     console.log("Other message:" + data);
