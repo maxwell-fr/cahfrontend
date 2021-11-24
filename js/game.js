@@ -254,19 +254,7 @@ function ws_join(join_data) {
 
 $(".nextRound").on('click', function(){
     var gameID = getGameID();
-    $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/startRound`,
-        method: "POST",
-        data: {
-            gameID: gameID
-        },
-        success: function( result ) {
-            doGameUpdate(result.data);
-            $("#nextRound").addClass("d-none");
-            $("#mobileNextRound").addClass("d-none");
-        }
-    });
-    
+    send_ws_message("round", { gameID: gameID });
 });
 
 $(".clearSelection").on('click', function(){
@@ -674,12 +662,9 @@ function handle_ws_message(incoming) {
                     console.log("Create message: " + JSON.stringify(data.payload));
                     ws_create(data.payload);
                     break;
-                case "hand" :
-                    console.log("Hand message: " + JSON.stringify(data.payload))
-                    break;
                 case "round" :
                     console.log("Round message: " + JSON.stringify(data.payload));
-                    doGameUpdate(data);
+                    doGameUpdate(data.payload);
                     break;
                 case "join" :
                     console.log("Join message: " + JSON.stringify(data.payload));
