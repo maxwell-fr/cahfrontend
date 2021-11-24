@@ -210,8 +210,8 @@ $("#continueGame").on('click', function(){
     localStorage.setItem("cahgameid",gameID);
     localStorage.removeItem("cahround");
     localStorage.removeItem("lastcahgameid");
-    start_talking(getPlayerID());
-    getLatestRound(gameID);
+    //getLatestRound(gameID);
+    //send_ws_message("start_round", { gameID: gameID });
 });
 
 $("#joinGame").on('click', function() {
@@ -254,7 +254,7 @@ function ws_join(join_data) {
 
 $(".nextRound").on('click', function(){
     var gameID = getGameID();
-    send_ws_message("round", { gameID: gameID });
+    send_ws_message("start_round", { gameID: gameID });
 });
 
 $(".clearSelection").on('click', function(){
@@ -442,22 +442,16 @@ function selectCandidateCard(player){
     let gameID = getGameID();
     if(localRound.czar == playerID){
         addToConsole("Selected Candidate Card.");
-        $.ajax({
-            url: `${CONFIG_BASEURL}/v1/games/selectCandidateCard`,
-            method: "POST",
-            data: {
+        send_ws_message("select_candidate", {
                 gameID: gameID,
                 roundID: localRound._id,
                 player: player
-            },
-            success: function( result ) {
-                //updatePlayers(result.data.players, result.data.czar);
-                $("#czarBox").addClass("d-none");
-                $("#mobileCzarBox").addClass("d-none");
-                $("#nextRound").removeClass("d-none");
-                $("#mobileNextRound").removeClass("d-none");
-            }
-        });
+            });
+        //updatePlayers(result.data.players, result.data.czar);
+        $("#czarBox").addClass("d-none");
+        $("#mobileCzarBox").addClass("d-none");
+        $("#nextRound").removeClass("d-none");
+        $("#mobileNextRound").removeClass("d-none");
     }
 }
 
