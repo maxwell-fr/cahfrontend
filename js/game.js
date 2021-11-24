@@ -636,8 +636,6 @@ function clearData(){
 function start_talking() {
         cah_ws = new WebSocket(CONFIG_WSURL);
         cah_ws.onopen = function () {
-            //console.log("ws newly opened for " + player_id);
-            //cah_ws.send(JSON.stringify({player_id: player_id, action: "register"}));
             cah_ws.onmessage = handle_ws_message;
         }
 }
@@ -665,10 +663,11 @@ function handle_ws_message(incoming) {
                 case "round" :
                     console.log("Round message: " + JSON.stringify(data.payload));
                     doGameUpdate(data.payload);
+                    send_ws_message("hand", {playerID: getPlayerID()});
                     break;
                 case "join" :
                     console.log("Join message: " + JSON.stringify(data.payload));
-                    setPlayerID(data.player_id);
+                    setPlayerID(data.playerID);
                     ws_join(data.payload);
                     break;
                 case "update":
@@ -677,7 +676,7 @@ function handle_ws_message(incoming) {
                     break;
                 case "hand":
                     console.log("Hand message: " + JSON.stringify(data.payload));
-                    ws_hand(data.payload);
+                    ws_hand(data.payload.hand);
                     break;
                 default:
                     console.log("Other message:" + data);
