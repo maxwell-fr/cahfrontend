@@ -145,7 +145,9 @@ $("#set_toggle_on").on('click', function(){
     });
 });
 
-$("#newGame").on('click', function(){
+$("#newGame").on('click', function() {
+    var playerName = localStorage.getItem("cahplayername");
+    var gameID = $("#gameID").val().trim();
     var sets = [];
     $(".set_switch").each(function() {
         if($(this).is(":checked")){
@@ -155,45 +157,37 @@ $("#newGame").on('click', function(){
 
     var time_limit = $("#time_limit").val();
     var score_limit = $("#score_limit").val();
-    $("#whiteHand").html("");
-    //$("#gameBoard").html("");
     var playerName = localStorage.getItem("cahplayername");
     if(playerName.length == 0){
         addToConsole("Player Name is required.");
-    } else {
-        $.ajax({
-            url: `${CONFIG_BASEURL}/v1/games/new`,
-            method: "POST",
-            data: {
-                player: playerName,
-                sets: sets,
-                time_limit: time_limit,
-                score_limit: score_limit
-            },
-            success: function( result ) {
-                addToConsole("Started new game: "+result.data.gameID);
-                setGameID(result.data.gameID);
-                addToConsole("Your player ID: "+result.data.players[0]._id);
-                setPlayerID(result.data.players[0]._id);
-                updatePlayers(result.data.players, null);
-                $(".gameIDtag").each(function (){
-                    $(this).html("Game Link:");
-                    $(".gameIDlink").each(function (){
-                        $(this).val(window.location.href+"?id="+result.data.gameID);
-                    });
-                    $(".gameIDgroup").removeClass("d-none");
-                });
-                $("#nextRound").removeClass("d-none");
-                $("#mobileNextRound").removeClass("d-none");
-                $("#splash").addClass("d-none");
-                $("#game").removeClass("d-none");
-                $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
-                setOwnerID(result.data.owner);
-                start_talking(getPlayerID());
-            }
-        });
+    }
+    else {
+        send_ws_message("create", {gameID: null, player: playerName, sets: sets, time_limit: time_limit, score_limit: score_limit});
     }
 });
+function ws_create(create_data) {
+    $("#whiteHand").html("");
+    //$("#gameBoard").html("");
+
+    addToConsole("Started new game: "+create_data.gameID);
+    setGameID(create_data.gameID);
+    addToConsole("Your player ID: "+create_data.players[0]._id);//todo: ID handling still seems problematic
+    setPlayerID(create_data.players[0]._id);
+    updatePlayers(create_data.players, null);
+    $(".gameIDtag").each(function (){
+        $(this).html("Game Link:");
+        $(".gameIDlink").each(function (){
+            $(this).val(window.location.href+"?id="+create_data.gameID);
+        });
+        $(".gameIDgroup").removeClass("d-none");
+    });
+    $("#nextRound").removeClass("d-none");
+    $("#mobileNextRound").removeClass("d-none");
+    $("#splash").addClass("d-none");
+    $("#game").removeClass("d-none");
+    $("#blackCardHolder").html('<div class="float-right mb-4 mt-4"><div class="playerCard card text-white bg-dark"><div class="card-body"><p class="card-text">Share the game ID below with your friends (if you have any). Press Next Round when you\'re ready to start.</p></div></div></div>');
+    setOwnerID(create_data.owner);
+}
 
 $("#resetGame").on('click', function(){
     clearData();
@@ -690,6 +684,10 @@ function handle_ws_message(incoming) {
             switch(data.action) {
                 case "info" :
                     console.log("Server says: " + data.payload);
+                    break;
+                case "create" :
+                    console.log("Create message: " + data.payload);
+                    ws_create(data.payload);
                     break;
                 case "hand" :
                     console.log("Hand message: " + data.payload)
