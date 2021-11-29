@@ -281,6 +281,13 @@ $("#kickButton").on('click', function(e){
         $('#playerOptions').modal('hide');
 });
 
+$("#kickedSucksButton").on('click', function(e){
+    console.log("Total bummer, got kicked");
+    $('#playerOptions').modal('hide');
+    const baseurl = window.location.origin+window.location.pathname;
+    location.href=baseurl;
+});
+
 function playerMenu(id,name) {
     $("#playerOptionsName").html(name);
     $("#kickButton").attr("data-id",id);
@@ -668,6 +675,9 @@ function handle_ws_message(incoming) {
                     console.log("Player kicked!");
                     updatePlayers(data.payload.players);
                     //todo: handle case where this player was kicked
+                    if(data.payload.players.find(p => p._id == getPlayerID()) === undefined) {
+                        $('#gotKicked').modal('show');
+                    }
                     break;
                 default:
                     console.log("Other message:" + data);
