@@ -273,20 +273,12 @@ $("#kickButton").on('click', function(e){
     console.log("kick",$(this).attr('data-id'));
     var playerID = $(this).attr('data-id');
     var gameID = getGameID();
-    $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/removePlayer`,
-        method: "POST",
-        data: {
+    send_ws_message("kick",{
             gameID: gameID,
             playerID: playerID
-        },
-        success: function( result ) {
-            // doGameUpdate(result.data);
-            // getHand();
-            console.log("kicked player");
-            $('#playerOptions').modal('hide');        
-        }
-    });
+        });
+        console.log("kicked player");
+        $('#playerOptions').modal('hide');
 });
 
 function playerMenu(id,name) {
@@ -671,6 +663,11 @@ function handle_ws_message(incoming) {
                 case "hand":
                     console.log("Hand message: " + JSON.stringify(data.payload));
                     ws_hand(data.payload.hand);
+                    break;
+                case "kick":
+                    console.log("Player kicked!");
+                    updatePlayers(data.payload.players);
+                    //todo: handle case where this player was kicked
                     break;
                 default:
                     console.log("Other message:" + data);
