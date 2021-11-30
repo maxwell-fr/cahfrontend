@@ -14,8 +14,25 @@
     <title>Definitely Not CAH</title>
   </head>
   <body>
-    <div id="main">
-      <div class="accordion" id="accordionExample">
+    <div id="main" class="container-fluid">
+      <i id="loader" class="fas fa-atom fa-spin fa-10x" style="position: fixed; left: 45%; top: 42%;"></i>
+      <ul class="nav nav-pills" id="myTab" role="tablist" style="margin-top: 5px;">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="wc-tab" data-toggle="tab" href="#wc" role="tab" aria-controls="wc" aria-selected="true">White Cards</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="bc-tab" data-toggle="tab" href="#bc" role="tab" aria-controls="bc" aria-selected="false">Black Cards</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="wc" role="tabpanel" aria-labelledby="wc-tab">
+          <div class="accordion" id="whiteCards">
+          </div>
+        </div>
+        <div class="tab-pane fade" id="bc" role="tabpanel" aria-labelledby="bc-tab">
+          <div class="accordion" id="blackCards">
+          </div>
+        </div>
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
@@ -26,38 +43,45 @@
         $.ajax({
           url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllCards",
           method: "GET",
-          data: {
-              //gameID: gameID
-          },
           success: function( result ) {
             result.data.whiteCardDeck.sort(compare);
+            result.data.blackCardDeck.sort(compare);
 
-            let setname = '12345';
+            let setname = '';
             let test = result.data.whiteCardDeck;
 
-            result.data.whiteCardDeck.forEach(card => {
-              if(card.set.name != setname){
-                if(setname != '12345'){
-                  $("#accordionExample").append('</div></div></div>');
-                }
+            for(const card of result.data.whiteCardDeck){
+              if(setname != card.set.name){
                 setname = card.set.name;
-                $("#accordionExample").append('<div class="card">');
-                  $("#accordionExample").append('<div class="card-header" id="headingOne">');
-                    $("#accordionExample").append('<h2 class="mb-0">');
-                      $("#accordionExample").append('<button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#'+card.set._id+'" aria-expanded="true" aria-controls="collapseOne">');
-                        $("#accordionExample").append("<h2>"+setname+" - ("+card.set._id+")</h2>");
-                      $("#accordionExample").append('</button>');
-                    $("#accordionExample").append('</h2>');
-                  $("#accordionExample").append('</div>');
-                  $("#accordionExample").append('<div id="'+card.set._id+'" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">');
-                    $("#accordionExample").append('<div class="card-body">');
+                if(setname != ''){
+                  $("#whiteCards").append('</div></div></div>');
+                }
+                $("#whiteCards").append('<div class="card"><div class="card-header" id="heading'+card.set._id+'"><h2 class="mb-0"><button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse'+card.set._id+'" aria-expanded="true" aria-controls="collapse'+card.set._id+'">'+setname+' <br/><small class="text-muted">'+card.set._id+'</small></button></h2></div><div id="collapse'+card.set._id+'" class="collapse" aria-labelledby="heading'+card.set._id+'" data-parent="#whiteCards"><div class="card-body" id="card'+card.set._id+'">');
               }
-              let lio = test.filter(c => c.text == card.text).length;
-              //if(lio > 1){
-                $("#accordionExample").append('<div class="playerCard card bg-light whiteCard float-left"><div class="card-body"><p class="card-text">('+lio+") "+card.text+'</p></div></div>');
-              //}
-            });
-          }
+              
+              $("#card"+card.set._id).append(
+                '<div class="playerCard card bg-white m-2 p-2 whiteCard float-left">'+card.text+'<br/><small class="text-muted">'+card._id+'</small></div>'
+              );
+            }
+
+            setname = '';
+            for(const card of result.data.blackCardDeck){
+              if(setname != card.set.name){
+                setname = card.set.name;
+                if(setname != ''){
+                  $("#blackCards").append('</div></div></div>');
+                }
+                $("#blackCards").append('<div class="card"><div class="card-header" id="headingBlack'+card.set._id+'"><h2 class="mb-0"><button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseBlack'+card.set._id+'" aria-expanded="true" aria-controls="collapseBlack'+card.set._id+'">'+setname+' <br/><small class="text-muted">'+card.set._id+'</small></button></h2></div><div id="collapseBlack'+card.set._id+'" class="collapse" aria-labelledby="headingBlack'+card.set._id+'" data-parent="#blackCards"><div class="card-body" id="cardBlack'+card.set._id+'">');
+              } else {
+                newSet = false;
+              }
+              
+              $("#cardBlack"+card.set._id).append(
+                '<div class="playerCard card bg-secondary m-2 p-2 blackCard float-left">'+card.text+' ('+card.pick+')<br/><small class="text-muted">'+card._id+'</small></div>'
+              );
+            }
+            $("#loader").addClass("d-none");
+          },
         });
       });
 
