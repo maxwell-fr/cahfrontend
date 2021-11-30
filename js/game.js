@@ -288,9 +288,9 @@ function ws_join(join_data) {
 $(".nextRound").on('click', function(){
     var gameID = getGameID();
     send_ws_message("start_round", { gameID: gameID });
-    //$("#nextRound").html("<i class='fas fa-angle-double-right'></i> Next Round <i class='fas fa-angle-double-right'></i>");
-    //$("#nextRound").addClass("d-none");
-    //$("#mobileNextRound").addClass("d-none");
+    $("#nextRound").html("<i class='fas fa-angle-double-right'></i> Next Round <i class='fas fa-angle-double-right'></i>");
+    $("#nextRound").addClass("d-none");
+    $("#mobileNextRound").addClass("d-none");
 });
 
 $("#mulliganConfirm").on('click', function() {
@@ -594,7 +594,10 @@ function doGameUpdate(round){
             if(round.czar != playerID){
                 $("#selectionButtons").removeClass("d-none");
                 $("#mobileSelectionButtons").removeClass("d-none");
+                $("#czarBox").addClass("d-none");
             } else {
+                $("#czarBox").html("You are the Czar!");
+                $("#czarBox").removeClass("d-none");
                 $("#selectionButtons").addClass("d-none");
                 $("#mobileSelectionButtons").addClass("d-none");
             }
@@ -634,8 +637,19 @@ function doGameUpdate(round){
             if(round.czar == playerID){
                 if(round.status == "select"){
                     $("#czarBox").html("Pick a winner!");
+                    $("#czarBox").removeClass("d-none");
                     $("#mobileCzarBox").html("Pick a winner!");
+                    $("#mobileCzarBox").removeClass("d-none");
                 }
+                if(round.status == "closed") {
+                    $("#nextRound").removeClass("d-none");
+                    $("#czarBox").addClass("d-none");
+                    $("#mobileCzarBox").html("Pick a winner!");
+                    $("#mobileCzarBox").addClass("d-none");
+                }
+            }
+            else {
+                $("#nextRound").addClass("d-none");
             }
         }
         if(localRound.candidateCards.length != round.candidateCards.length){
