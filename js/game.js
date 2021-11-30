@@ -57,7 +57,7 @@ $(document).ready(function(){
         $("#collapseTwo").addClass("show");
         $("#gameID").val(vars.id);
         $.ajax({
-            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getGame",
+            url: `${CONFIG_BASEURL}/v1/games/getGame`,
             method: "POST",
             data: {
                 gameID: vars.id
@@ -97,36 +97,6 @@ var namearray = [
     "Will you be my friend?",
     "I'm sure you're very nice!"
 ];
-
-// setInterval(function(){
-//     var gameID = getGameID();
-//     if(gameID){
-//         $("#gameDetails").removeClass("d-none");
-//         if(!getRound()){
-//             $.ajax({
-//                 url: `${CONFIG_BASEURL}/v1/games/getGame`,
-//                 method: "POST",
-//                 data: {
-//                     gameID: gameID
-//                 },
-//                 success: function( result ) {
-//                     updatePlayers(result.data.players, null);
-//                     //console.log(result.data.winner);
-//                     if(result.data.rounds.length > 0){
-//                         getLatestRound(gameID);
-//                     }
-//                 }
-//             });
-//         } else {
-//             getLatestRound(gameID);
-//         }
-//     } else {
-//         $("#selectionButtons").addClass("d-none");
-//         $("#mobileSelectionButtons").addClass("d-none");
-//         $("#playerList").html("");
-//         $("#mobilePlayerList").html("");
-//     }
-// }, 1000);
 
 $("#menuIcon").on('click', function(){
     if($('#mobileInfoRow').hasClass("d-none")){
@@ -323,29 +293,17 @@ $(".nextRound").on('click', function(){
     //$("#mobileNextRound").addClass("d-none");
 });
 
-$("#mulliganConfirm").on('click', function(){
+$("#mulliganConfirm").on('click', function() {
     var playerID = getPlayerID();
     var gameID = getGameID();
-    $.ajax({
-        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/mulligan",
-        method: "POST",
-        data: {
-            playerID: playerID,
-            gameID: gameID
-        },
-        success: function( result ) {
-            console.log(result.data);
-            if(result.data.mulligans == 0){
-                console.log("should remove?");
-                $("#mulliganButton").addClass('d-none');
-            } else {
-                console.log("wrong mulligans = "+result.data.mulligans);
-            }
-            $('#mulliganModal').modal('hide');
-            getHand();
-        }
+    send_ws_message("mulligan", {
+        playerID: playerID,
+        gameID: gameID
     });
+
+    $('#mulliganModal').modal('hide');
 });
+
 
 $(".clearSelection").on('click', function(){
     clearSelection();
@@ -466,12 +424,12 @@ function submitWhiteCards(){
     clearSelection();
 }
 
-function ws_hand(hand)
+function ws_hand(data)
 {
     addToConsole("Acquired your hand.");
     $("#whiteHand").html("");
     var whiteHand = "";
-    hand.forEach(function(card){
+    data.hand.forEach(function(card){
         whiteHand = whiteHand +
             `<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div id="wc${card._id}" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard('${card._id}','${card.blankCard}')">
@@ -483,9 +441,13 @@ function ws_hand(hand)
                     </div>`;
     });
     $("#whiteHand").html(whiteHand);
-    // if(hand.data.mulligans > 0){
-    //     $("#mulliganButton").removeClass('d-none');
-    // }
+    if(data.mulligans > 0){
+         $("#mulliganButton").removeClass('d-none');
+    }
+    else {
+        $("#mulliganButton").addClass('d-none');
+    }
+
 }
 
 function addToConsole(text){
@@ -846,7 +808,7 @@ function handle_ws_message(incoming) {
                     break;
                 case "hand":
                     console.log("Hand message: " + JSON.stringify(data.payload));
-                    ws_hand(data.payload.hand);
+                    ws_hand(data.payload);
                     break;
                 case "kick":
                     console.log("Player kicked!");
