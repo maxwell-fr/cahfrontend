@@ -233,11 +233,13 @@ $("#continueGame").on('click', function(){
             </div>
         </div>`);
     var gameID = localStorage.getItem("lastcahgameid");
+    var playerID = localStorage.getItem("cahplayerid");
+    var player_name = localStorage.getItem("cahplayername");
     localStorage.setItem("cahgameid",gameID);
     localStorage.removeItem("cahround");
     localStorage.removeItem("lastcahgameid");
     //getLatestRound(gameID);
-    //send_ws_message("start_round", { gameID: gameID });
+    send_ws_message("rejoin", { gameID: gameID, player: player_name });
 });
 
 $("#joinGame").on('click', function(){
