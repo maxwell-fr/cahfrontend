@@ -338,6 +338,11 @@ $("#kickedSucksButton").on('click', function(e){
     location.href=baseurl;
 });
 
+$("#errorSucksButton").on('click', function(e){
+    console.log("Fine, just ignore the error then.");
+    $('#playerOptions').modal('hide');
+});
+
 function playerMenu(id,name) {
     $("#playerOptionsName").html(name);
     $("#kickButton").attr("data-id",id);
@@ -803,6 +808,11 @@ function handle_ws_message(incoming) {
             switch(data.action) {
                 case "info" :
                     console.log("Server says: " + JSON.stringify(data.payload));
+                    break;
+                case "error":
+                    console.log("Error: " + JSON.stringify(data.payload));
+                    $("#errortext").html = JSON.stringify(data.payload);
+                    $("#errorbox").modal("show");
                     break;
                 case "create" :
                     console.log("Create message: " + JSON.stringify(data.payload));
