@@ -245,7 +245,7 @@ $("#continueGame").on('click', function(){
 $("#joinGame").on('click', function(){
     var playerName = localStorage.getItem("cahplayername");
     var gameID = $("#gameID").val().trim();
-    send_ws_message("join", {gameID: gameID, player: playerName});
+    send_ws_message("join_request", {game_id: gameID, player_name: playerName});
 });
 
 function ws_join(join_data) {
@@ -811,7 +811,7 @@ function handle_ws_message(incoming) {
                     break;
                 case "error":
                     console.log("Error: " + JSON.stringify(data.payload));
-                    $("#errortext").html = JSON.stringify(data.payload);
+                    $("#errortext").html(data.payload);
                     $("#errorbox").modal("show");
                     break;
                 case "create" :
@@ -823,9 +823,9 @@ function handle_ws_message(incoming) {
                     doGameUpdate(data.payload);
                     send_ws_message("hand", {playerID: getPlayerID()});
                     break;
-                case "join" :
+                case "join_response" :
                     console.log("Join message: " + JSON.stringify(data.payload));
-                    setPlayerID(data.playerID);
+                    setPlayerID(data.player_id);
                     ws_join(data.payload);
                     break;
                 case "update":
