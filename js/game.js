@@ -6,7 +6,7 @@ const CONFIG_BASEURL = `http://${CONFIG_API_HOST}:3000`;
 const CONFIG_WSURL = `ws://${CONFIG_API_HOST}:38080`;
 
 let cah_ws = null;
-start_talking();
+startTalking();
 
 $(document).ready(function(){
     try {
@@ -164,18 +164,18 @@ $("#newGame").on('click', function(){
         if (playerName.length == 0) {
             addToConsole("Player Name is required.");
         } else {
-            send_ws_message("create_request",
+            sendWsMessage("createRequest",
                 {
-                    playerID: playerName,
+                    player: playerName,
                     sets: sets,
-                    timeLimit: time_limit,
-                    scoreLimit: score_limit,
-                    gameName: game_name
+                    time_limit: time_limit,
+                    score_limit: score_limit,
+                    name: game_name
                 });
         }
     }
 });
-function ws_create(create_data) {
+function wsCreate(create_data) {
     $("#whiteHand").html("");
     //$("#gameBoard").html("");
 
@@ -238,16 +238,16 @@ $("#continueGame").on('click', function(){
     localStorage.removeItem("cahround");
     localStorage.removeItem("lastcahgameid");
     //getLatestRound(gameID);
-    send_ws_message("rejoin", { gameID: gameID, player: player_name });
+    sendWsMessage("rejoin", { gameID: gameID, player: player_name });
 });
 
 $("#joinGame").on('click', function(){
     var playerName = localStorage.getItem("cahplayername");
     var gameID = $("#gameID").val().trim();
-    send_ws_message("join_request", {game_id: gameID, player_name: playerName});
+    sendWsMessage("joinRequest", {gameID: gameID, playerName: playerName});
 });
 
-function ws_join(join_data) {
+function wsJoin(join_data) {
     $("#whiteHand").html("");
     $("#gameBoard").html("");
     addToConsole("Joined game ID: "+join_data.gameID);
@@ -288,7 +288,7 @@ function ws_join(join_data) {
 
 $(".nextRound").on('click', function(){
     var gameID = getGameID();
-    send_ws_message("start_round", { gameID: gameID });
+    sendWsMessage("startRound", { gameID: gameID });
     $("#nextRound").html("<i class='fas fa-angle-double-right'></i> Next Round <i class='fas fa-angle-double-right'></i>");
     $("#nextRound").addClass("d-none");
     $("#mobileNextRound").addClass("d-none");
@@ -297,7 +297,7 @@ $(".nextRound").on('click', function(){
 $("#mulliganConfirm").on('click', function() {
     var playerID = getPlayerID();
     var gameID = getGameID();
-    send_ws_message("mulligan", {
+    sendWsMessage("mulligan", {
         playerID: playerID,
         gameID: gameID
     });
@@ -322,7 +322,7 @@ $("#kickButton").on('click', function(e){
     console.log("kick",$(this).attr('data-id'));
     var playerID = $(this).attr('data-id');
     var gameID = getGameID();
-    send_ws_message("kick",{
+    sendWsMessage("kick",{
             gameID: gameID,
             playerID: playerID
         });
@@ -420,7 +420,7 @@ function submitWhiteCards(){
     var roundID = localRound._id;
     //var czar = localStorage.getItem("cahczar");
     if(localRound.czar != playerID) {
-        send_ws_message("submit_white", {
+        sendWsMessage("submitWhite", {
             gameID: gameID,
             roundID: roundID,
             whiteCards: cards,
@@ -430,7 +430,7 @@ function submitWhiteCards(){
     clearSelection();
 }
 
-function ws_hand(data)
+function wsHand(data)
 {
     addToConsole("Acquired your hand.");
     $("#whiteHand").html("");
@@ -525,7 +525,7 @@ function selectCandidateCard(player){
     let gameID = getGameID();
     if(localRound.czar == playerID){
         addToConsole("Selected Candidate Card.");
-        send_ws_message("select_candidate", {
+        sendWsMessage("selectCandidate", {
                 gameID: gameID,
                 roundID: localRound._id,
                 player: player
@@ -785,19 +785,19 @@ function clearData()
     localStorage.removeItem("cahczarselection");
 }
 
-function start_talking() {
+function startTalking() {
         cah_ws = new WebSocket(CONFIG_WSURL);
         cah_ws.onopen = function () {
-            cah_ws.onmessage = handle_ws_message;
+            cah_ws.onmessage = handleWsMessage;
         }
 }
 
 
-function send_ws_message(action, payload) {
+function sendWsMessage(action, payload) {
     cah_ws.send(JSON.stringify({action: action, player_id: getPlayerID(), payload: payload}));
 }
 
-function handle_ws_message(incoming) {
+function handleWsMessage(incoming) {
     try {
         const data = JSON.parse(incoming.data);
         if(data.action === undefined) {
@@ -813,19 +813,19 @@ function handle_ws_message(incoming) {
                     $("#errortext").html(data.payload);
                     $("#errorbox").modal("show");
                     break;
-                case "create_response" :
+                case "createResponse" :
                     console.log("Create message: " + JSON.stringify(data.payload));
-                    ws_create(data.payload);
+                    wsCreate(data.payload);
                     break;
                 case "round" :
                     console.log("Round message: " + JSON.stringify(data.payload));
                     doGameUpdate(data.payload);
-                    send_ws_message("hand", {playerID: getPlayerID()});
+                    sendWsMessage("hand", {playerID: getPlayerID()});
                     break;
-                case "join_response" :
+                case "joinResponse" :
                     console.log("Join message: " + JSON.stringify(data.payload));
-                    setPlayerID(data.player_id);
-                    ws_join(data.payload);
+                    setPlayerID(data.playerID);
+                    wsJoin(data.payload);
                     break;
                 case "update":
                     console.log("Update message: " + JSON.stringify(data.payload));
@@ -833,7 +833,7 @@ function handle_ws_message(incoming) {
                     break;
                 case "hand":
                     console.log("Hand message: " + JSON.stringify(data.payload));
-                    ws_hand(data.payload);
+                    wsHand(data.payload);
                     break;
                 case "kick":
                     console.log("Player kicked!");
@@ -844,7 +844,7 @@ function handle_ws_message(incoming) {
                     }
                     break;
                 default:
-                    console.log("Other message:" + data);
+                    console.log("Other message:" + JSON.stringify(data));
             }
         }
     }
