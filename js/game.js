@@ -164,14 +164,13 @@ $("#newGame").on('click', function(){
         if (playerName.length == 0) {
             addToConsole("Player Name is required.");
         } else {
-            send_ws_message("create",
+            send_ws_message("create_request",
                 {
-                    gameID: null,
-                    player: playerName,
+                    playerID: playerName,
                     sets: sets,
-                    time_limit: time_limit,
-                    score_limit: score_limit,
-                    name: game_name
+                    timeLimit: time_limit,
+                    scoreLimit: score_limit,
+                    gameName: game_name
                 });
         }
     }
@@ -814,7 +813,7 @@ function handle_ws_message(incoming) {
                     $("#errortext").html(data.payload);
                     $("#errorbox").modal("show");
                     break;
-                case "create" :
+                case "create_response" :
                     console.log("Create message: " + JSON.stringify(data.payload));
                     ws_create(data.payload);
                     break;
