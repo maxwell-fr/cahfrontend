@@ -820,7 +820,7 @@ function handleWsMessage(incoming) {
                 case "round" :
                     console.log("Round message: " + JSON.stringify(data.payload));
                     doGameUpdate(data.payload);
-                    sendWsMessage("hand", {playerID: getPlayerID()});
+                    sendWsMessage("handRequest", {playerID: getPlayerID(), gameID: getGameID()});
                     break;
                 case "joinResponse" :
                     console.log("Join message: " + JSON.stringify(data.payload));
@@ -831,7 +831,7 @@ function handleWsMessage(incoming) {
                     console.log("Update message: " + JSON.stringify(data.payload));
                     updatePlayers(data.payload.players);
                     break;
-                case "hand":
+                case "handResponse":
                     console.log("Hand message: " + JSON.stringify(data.payload));
                     wsHand(data.payload);
                     break;
