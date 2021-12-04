@@ -181,8 +181,8 @@ function wsCreate(create_data) {
 
     addToConsole("Started new game: "+create_data.gameID);
     setGameID(create_data.gameID);
-    addToConsole("Your player ID: "+create_data.players[0]._id);//todo: ID handling still seems problematic
-    setPlayerID(create_data.players[0]._id);
+    addToConsole("Your player ID: "+create_data.players[0].id);//todo: ID handling still seems problematic
+    setPlayerID(create_data.players[0].id);
     updatePlayers(create_data.players, null);
     $(".gameIDtag").each(function (){
         $(this).html("Game Link:");
@@ -794,7 +794,7 @@ function startTalking() {
 
 
 function sendWsMessage(action, payload) {
-    cah_ws.send(JSON.stringify({action: action, player_id: getPlayerID(), payload: payload}));
+    cah_ws.send(JSON.stringify({action: action, playerID: getPlayerID(), payload: payload}));
 }
 
 function handleWsMessage(incoming) {
