@@ -204,7 +204,7 @@ function wsCreate(create_data) {
                                 </div>
                             </div>
                         </div>`);
-    setOwnerID(create_data.owner);
+    setOwnerID(create_data.ownerID);
 }
 
 $("#resetGame").on('click', function(){
@@ -320,9 +320,9 @@ $("#kickButton").on('click', function(e){
     console.log("kick",$(this).attr('data-id'));
     var playerID = $(this).attr('data-id');
     var gameID = getGameID();
-    sendWsMessage("kick",{
+    sendWsMessage("kickRequest",{
             gameID: gameID,
-            playerID: playerID
+            kickeeID: playerID
         });
         console.log("kicked player");
         $('#playerOptions').modal('hide');
@@ -840,11 +840,10 @@ function handleWsMessage(incoming) {
                     console.log("Hand message: " + JSON.stringify(data.payload));
                     wsHand(data.payload);
                     break;
-                case "kick":
+                case "kickMessage":
                     console.log("Player kicked!");
                     updatePlayers(data.payload.players);
-                    //TODO: handle case where this player was kicked
-                    if(data.payload.players.find(p => p.id == getPlayerID()) === undefined) {
+                    if(data.payload.kickeeID === getPlayerID()) {
                         $('#gotKicked').modal('show');
                     }
                     break;
