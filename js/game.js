@@ -238,7 +238,7 @@ $("#continueGame").on('click', function(){
     localStorage.removeItem("cahround");
     localStorage.removeItem("lastcahgameid");
     //getLatestRound(gameID);
-    sendWsMessage("rejoin", { gameID: gameID, player: player_name });
+    sendWsMessage("rejoinRequest", { gameID: gameID, playerID: playerID });
 });
 
 $("#joinGame").on('click', function(){
