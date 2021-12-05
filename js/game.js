@@ -252,8 +252,6 @@ function wsJoin(join_data) {
     $("#gameBoard").html("");
     addToConsole("Joined game ID: "+join_data.gameID);
     setGameID(join_data.gameID);
-    //addToConsole("player ID: "+join_data.players[result.data.players.length-1]._id);
-    //setPlayerID(result.data.players[result.data.players.length-1]._id);
     updatePlayers(join_data.players, null);
     localStorage.removeItem("round");
     $(".gameIDtag").each(function (){
@@ -417,7 +415,7 @@ function submitWhiteCards(){
     var gameID = getGameID();
     var localRound = getRound();
     var cards = getSubmitCards();
-    var roundID = localRound._id;
+    var roundID = localRound.id;
     //var czar = localStorage.getItem("cahczar");
     if(localRound.czar != playerID) {
         sendWsMessage("submitWhite", {
@@ -438,7 +436,7 @@ function wsHand(data)
     data.hand.forEach(function(card){
         whiteHand = whiteHand +
             `<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                        <div id="wc${card._id}" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard('${card._id}','${card.blankCard}')">
+                        <div id="wc${card.id}" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard('${card.id}','${card.blankCard}')">
                             <div class="card-body">
                                 <p class="card-text">${card.text}</p>
                                 <span style="position: absolute; font-size:9px; bottom:5px; right:10px;"><i class="fas fa-layer-group"></i> ${card.set.name}</span>
@@ -481,10 +479,10 @@ function updatePlayers(players, czar){
     var playerID = getPlayerID();
     var owner = getOwnerID();
     players.forEach(function(player){
-        if(player._id == czar){
-            playerList += '<li class="player list-group-item active" '+(playerID == owner && player._id != owner ? 'onClick="playerMenu(\''+player._id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(player._id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-light float-right mr-1">'+player.points+'</span><span class="badge badge-info float-right mr-1"><i class="fas fa-gavel"></i></span></li>';
+        if(player.id == czar){
+            playerList += '<li class="player list-group-item active" '+(playerID == owner && player.id != owner ? 'onClick="playerMenu(\''+player.id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(player.id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-light float-right mr-1">'+player.points+'</span><span class="badge badge-info float-right mr-1"><i class="fas fa-gavel"></i></span></li>';
         } else {
-            playerList += '<li class="player list-group-item" '+(playerID == owner && player._id != owner ? 'onClick="playerMenu(\''+player._id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(!player.active ? '<i class="fas fa-user-clock"></i>' : '')+(player._id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-primary float-right">'+player.points+'</span></li>';
+            playerList += '<li class="player list-group-item" '+(playerID == owner && player.id != owner ? 'onClick="playerMenu(\''+player.id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(!player.active ? '<i class="fas fa-user-clock"></i>' : '')+(player.id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-primary float-right">'+player.points+'</span></li>';
         }
     });
     $("#playerList").html(playerList);
@@ -527,7 +525,7 @@ function selectCandidateCard(player){
         addToConsole("Selected Candidate Card.");
         sendWsMessage("selectCandidate", {
                 gameID: gameID,
-                roundID: localRound._id,
+                roundID: localRound.id,
                 player: player
             });
         if(!getCzarCard()){
@@ -609,7 +607,7 @@ function doGameUpdate(round){
             }
             return;
         }
-        if(localRound._id != round._id){
+        if(localRound.id != round.id){
             //new round
             updateGameBoard(round.blackCard, round.candidateCards, round.status);
             clearSelection();
@@ -839,7 +837,7 @@ function handleWsMessage(incoming) {
                     console.log("Player kicked!");
                     updatePlayers(data.payload.players);
                     //todo: handle case where this player was kicked
-                    if(data.payload.players.find(p => p._id == getPlayerID()) === undefined) {
+                    if(data.payload.players.find(p => p.id == getPlayerID()) === undefined) {
                         $('#gotKicked').modal('show');
                     }
                     break;
