@@ -12,6 +12,7 @@
     <script src="https://kit.fontawesome.com/38e9318183.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2/dist/confetti.browser.min.js"></script>
 
+    <link rel="icon" type="image/png" href="/img/dencah.png" />
     <title>DeNCAH</title>
   </head>
   <body>
@@ -113,6 +114,22 @@
                                             <button type="button" class="btn btn-success confirmSelection" style="width:50%;" id="confirmSelection" disabled>Confirm <i class="far fa-share-square"></i></button>
                                         </div>
                                         <div id="winnerDisplay" onclick="shootConfetti();" class="btn btn-block btn-success d-none">Someone has won the game!</div>
+                                    </div>
+                                </div>
+                                <hr/>
+                                <div class="row">
+                                    <div class="col">
+                                        <div>
+                                            <div class="d-lg-inline text-muted">
+                                                <span id="connectionText"></span>
+                                            </div>
+                                            <div class="float-right">
+                                                <i id="conn_icon_trying" class="fas fa-hourglass-half d-none"></i>
+                                                <i id="conn_icon_link" class="fas fa-smile d-none"></i>
+                                                <i id="conn_icon_offline" class="fas fa-sad-tear d-none"></i>
+                                                <i id="conn_icon_error" class="fas fa-skull d-none"></i>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

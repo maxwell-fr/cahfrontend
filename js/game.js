@@ -778,14 +778,43 @@ function clearData()
 }
 
 function startTalking() {
+        $("#connectionText").html("Connecting");
+        $("#conn_icon_trying").removeClass("d-none");
         cah_ws = new WebSocket(CONFIG_WSURL);
         cah_ws.onopen = function () {
+            $("#conn_icon_link").removeClass("d-none");
+            $("#conn_icon_error").addClass("d-none");
+            $("#conn_icon_offline").addClass("d-none");
+            $("#conn_icon_trying").addClass("d-none");
+            $("#connectionText").html("Server connected");
+            console.log("Connection opened.");
             cah_ws.onmessage = handleWsMessage;
         }
+
+        cah_ws.onclose = function() {
+            $("#conn_icon_link").addClass("d-none");
+            $("#conn_icon_error").addClass("d-none");
+            $("#conn_icon_offline").removeClass("d-none");
+            $("#conn_icon_trying").removeClass("d-none");
+            $("#connectionText").html("Server disconnected");
+            console.log("Connection closed.");
+            setTimeout(startTalking, 2000);
+        };
+
+        cah_ws.onerror = function() {
+            $("#conn_icon_link").addClass("d-none");
+            $("#conn_icon_error").removeClass("d-none");
+            $("#conn_icon_offline").removeClass("d-none");
+            $("#conn_icon_trying").removeClass("d-none");
+            $("#connectionText").html("Connection error");
+            console.log("Connection error.");
+            setTimeout(startTalking, 2000);
+        };
 }
 
 
 function sendWsMessage(action, payload, retry=false) {
+    $("#conn_icon_traffic").removeClass("d-none");
     if(!retry && cah_ws.readyState !== 1) {
         setTimeout(function(){
             sendWsMessage(action, payload, true)
