@@ -526,7 +526,7 @@ function selectCandidateCard(player){
         sendWsMessage("selectCandidate", {
                 gameID: gameID,
                 roundID: localRound.id,
-                player: player
+                playerID: player
             });
         if(!getCzarCard()){
             addToConsole("Selected Candidate Card.");
