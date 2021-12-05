@@ -181,7 +181,7 @@ function wsCreate(create_data) {
 
     addToConsole("Started new game: "+create_data.gameID);
     setGameID(create_data.gameID);
-    addToConsole("Your player ID: "+create_data.players[0].id);//todo: ID handling still seems problematic
+    addToConsole("Your player ID: "+create_data.players[0].id);//TODO: ID handling still seems problematic
     setPlayerID(create_data.players[0].id);
     updatePlayers(create_data.players, null);
     $(".gameIDtag").each(function (){
@@ -843,7 +843,7 @@ function handleWsMessage(incoming) {
                 case "kick":
                     console.log("Player kicked!");
                     updatePlayers(data.payload.players);
-                    //todo: handle case where this player was kicked
+                    //TODO: handle case where this player was kicked
                     if(data.payload.players.find(p => p.id == getPlayerID()) === undefined) {
                         $('#gotKicked').modal('show');
                     }
