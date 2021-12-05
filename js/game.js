@@ -27,19 +27,10 @@ $(document).ready(function(){
         vars[key] = value;
     });
     if(vars.id){
+        sendWsMessage("getGameRequest", {gameID: vars.id});
         $("#openJoinButton").removeClass("collapsed");
         $("#collapseTwo").addClass("show");
         $("#gameID").val(vars.id);
-        $.ajax({
-            url: `${CONFIG_BASEURL}/v1/games/getGame`,
-            method: "POST",
-            data: {
-                gameID: vars.id
-            },
-            success: function( result ) {
-                $("#joinGameText").html("You've been invited to a game called "+result.data.name+". Lucky you!");
-            }
-        });
     }
 
 });
@@ -845,6 +836,10 @@ function handleWsMessage(incoming) {
                 case "getAllSetsResponse":
                     console.log("All sets message:" + JSON.stringify(data.payload));
                     wsAllSets(data.payload);
+                    break;
+                case "getGameResponse":
+                    console.log("Get game message: " + JSON.stringify(data.payload));
+                    $("#joinGameText").html("You've been invited to a game called "+data.payload.name+". Lucky you!");
                     break;
                 case "createResponse" :
                     console.log("Create message: " + JSON.stringify(data.payload));
