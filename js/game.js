@@ -9,34 +9,8 @@ let cah_ws = null;
 startTalking();
 
 $(document).ready(function(){
-    try {
-        $.ajax({
-            url: `${CONFIG_BASEURL}/v1/games/getAllSets`,
-            method: "GET",
-            data: {
-                //gameID: gameID
-            },
-            success: function( result ) {
-                var sets = result.data;
-                sets.forEach(function(set){
-                    $("#options").append(`
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="set_switch custom-control-input" id="${set.id}" checked>
-                            <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-dark">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
-                        </div>`);
-                })
-            },
-            statusCode: {
-                502: function() {
-                    $("#nameError").removeClass("d-none");
-                    $("#nameError").html("<i class='fas fa-plug'></i> Looks like the server is down... The game might not work.");
-                }
-            }
-        });
-    } catch(err) {
-        $("#nameError").removeClass("d-none");
-        $("#nameError").html("<i class='fas fa-plug'></i> Looks like the server is down... The game might not work.");
-    }
+    sendWsMessage("getAllSetsRequest", {please: "pretty please"});
+
     var gameID = getGameID();
     if(!gameID || getGameOver()){
         clearData();
@@ -69,6 +43,21 @@ $(document).ready(function(){
     }
 
 });
+
+function wsAllSets(sets) {
+    sets.forEach(function(set){
+        $("#options").append(`
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="set_switch custom-control-input" id="${set.id}" checked>
+                            <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-dark">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
+                        </div>`);
+    });
+}
+
+function todo_linkerrors() {
+    $("#nameError").removeClass("d-none");
+    $("#nameError").html("<i class='fas fa-plug'></i> Looks like the server is down... The game might not work.");
+}
 
 $(".copyGameID").on('click', function() {
     /* Get the text field */
@@ -796,7 +785,13 @@ function startTalking() {
 }
 
 
-function sendWsMessage(action, payload) {
+function sendWsMessage(action, payload, retry=false) {
+    if(!retry && cah_ws.readyState !== 1) {
+        setTimeout(function(){
+            sendWsMessage(action, payload, true)
+        }, 500);
+        return;
+    }
     cah_ws.send(JSON.stringify({action: action, playerID: getPlayerID(), payload: payload}));
 }
 
@@ -817,6 +812,10 @@ function handleWsMessage(incoming) {
                     console.log("Error: " + JSON.stringify(data.payload));
                     $("#errortext").html(data.payload);
                     $("#errorbox").modal("show");
+                    break;
+                case "getAllSetsResponse":
+                    console.log("All sets message:" + JSON.stringify(data.payload));
+                    wsAllSets(data.payload);
                     break;
                 case "createResponse" :
                     console.log("Create message: " + JSON.stringify(data.payload));
