@@ -337,8 +337,13 @@ $("#kickedSucksButton").on('click', function(e){
 
 $("#errorSucksButton").on('click', function(e){
     console.log("Fine, just ignore the error then.");
-    $('#playerOptions').modal('hide');
+    $('#errorbox').modal('hide');
 });
+$("#infoWhateverButton").on('click', function(e){
+    console.log("Pff. As if.");
+    $('#infobox').modal('hide');
+});
+
 
 function playerMenu(id,name) {
     $("#playerOptionsName").html(name);
@@ -805,6 +810,8 @@ function handleWsMessage(incoming) {
             switch(data.action) {
                 case "info" :
                     console.log("Server says: " + JSON.stringify(data.payload));
+                    $("#infotext").html(data.payload);
+                    $("#infobox").modal("show");
                     break;
                 case "error":
                     console.log("Error: " + JSON.stringify(data.payload));
