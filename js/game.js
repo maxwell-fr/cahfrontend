@@ -217,7 +217,7 @@ $("#continueGame").on('click', function(){
     localStorage.setItem("cahgameid",gameID);
     localStorage.removeItem("cahround");
     localStorage.removeItem("lastcahgameid");
-    //getLatestRound(gameID);
+
     sendWsMessage("rejoinRequest", { gameID: gameID, playerID: playerID });
 });
 
@@ -443,19 +443,6 @@ function addToConsole(text){
     console.log(text);
 }
 
-function getLatestRound(gameID){
-    $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/getLatestRound`,
-        method: "POST",
-        data: {
-            gameID: gameID
-        },
-        success: function( result ) {
-            doGameUpdate(result.data);
-            //console.log(result.data);
-        }
-    });
-}
 
 function updatePlayers(players, czar){
     $("#playerList").html("");
