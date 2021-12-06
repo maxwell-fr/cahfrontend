@@ -108,7 +108,6 @@
                                                 <span id="connectionText"></span>
                                             </div>
                                             <div class="float-right">
-                                                <i id="conn_icon_trying" class="fas fa-hourglass-half d-none"></i>
                                                 <i id="conn_icon_link" class="fas fa-smile d-none"></i>
                                                 <i id="conn_icon_offline" class="fas fa-sad-tear d-none"></i>
                                                 <i id="conn_icon_error" class="fas fa-skull d-none"></i>
@@ -249,7 +248,7 @@
                             </div>
                             <hr/>
                             <div class="col-12">
-                                <button class="btn btn-primary btn-block mt-2 mb-2" id="newGame">Start it up!</button>
+                                <button class="btn btn-primary btn-block mt-2 mb-2" id="newGame" disabled>I like tacos</button>
                             </div>
                         </div>
                       </div>
@@ -422,6 +421,21 @@
                   </div>
                   <div class="modal-footer">
                       <button id="infoWhateverButton" type="button" class="btn btn-secondary" data-dismiss="modal">Whatever</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div id="connectionbox" class="modal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" >
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title">Reconnecting . . . <i class='fas fa-spinner fa-spin'></i></h5>
+                  </div>
+                  <div class="modal-body">
+                      <p>Network's busted.</p>
+                      <p>Either the server is having difficulties or your overpriced Internet service sucks. Or both.</p>
+                  </div>
+                  <div class="modal-footer">
                   </div>
               </div>
           </div>

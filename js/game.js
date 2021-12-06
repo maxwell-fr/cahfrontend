@@ -9,6 +9,8 @@ let cah_ws = null;
 startTalking();
 
 $(document).ready(function(){
+    $("#newGame").html("Waiting for card sets to load...");
+    $("#newGame").attr("disabled",true);
     sendWsMessage("getAllSetsRequest", {please: "pretty please"});
 
     var gameID = getGameID();
@@ -43,6 +45,13 @@ function wsAllSets(sets) {
                             <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-dark">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
                         </div>`);
     });
+    if(sets.length > 0){
+        $("#newGame").html("Start it up!");
+    }
+    else {
+        $("#newGame").html("No sets available. Can't play without cards!");
+    }
+    $("#newGame").attr("disabled",false);
 }
 
 function todo_linkerrors() {
@@ -756,16 +765,16 @@ function clearData()
 }
 
 function startTalking() {
-        $("#connectionText").html("Connecting");
+        $("#connectionText").html("Connecting to server...");
         $("#conn_icon_trying").removeClass("d-none");
         cah_ws = new WebSocket(CONFIG_WSURL);
         cah_ws.onopen = function () {
             $("#conn_icon_link").removeClass("d-none");
             $("#conn_icon_error").addClass("d-none");
             $("#conn_icon_offline").addClass("d-none");
-            $("#conn_icon_trying").addClass("d-none");
             $("#connectionText").html("Server connected");
             console.log("Connection opened.");
+            $("#connectionbox").modal("hide");
             cah_ws.onmessage = handleWsMessage;
         }
 
@@ -773,9 +782,9 @@ function startTalking() {
             $("#conn_icon_link").addClass("d-none");
             $("#conn_icon_error").addClass("d-none");
             $("#conn_icon_offline").removeClass("d-none");
-            $("#conn_icon_trying").removeClass("d-none");
             $("#connectionText").html("Server disconnected");
             console.log("Connection closed.");
+            $("#connectionbox").modal("show");
             setTimeout(startTalking, 2000);
         };
 
@@ -783,22 +792,23 @@ function startTalking() {
             $("#conn_icon_link").addClass("d-none");
             $("#conn_icon_error").removeClass("d-none");
             $("#conn_icon_offline").removeClass("d-none");
-            $("#conn_icon_trying").removeClass("d-none");
             $("#connectionText").html("Connection error");
             console.log("Connection error.");
+            $("#connectionbox").modal("show");
             setTimeout(startTalking, 2000);
         };
 }
 
 
-function sendWsMessage(action, payload, retry=false) {
-    $("#conn_icon_traffic").removeClass("d-none");
-    if(!retry && cah_ws.readyState !== 1) {
+function sendWsMessage(action, payload) {
+    if(cah_ws.readyState !== 1) {
         setTimeout(function(){
             sendWsMessage(action, payload, true)
-        }, 500);
+        }, 1000);
+        console.log(`Network not ready. Retrying ${action} in 1000ms.`);
         return;
     }
+    console.log(`Sending ${action}.`);
     cah_ws.send(JSON.stringify({action: action, playerID: getPlayerID(), payload: payload}));
 }
 
