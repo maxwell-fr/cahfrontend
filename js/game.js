@@ -6,6 +6,11 @@ const CONFIG_BASEURL = `http://${CONFIG_API_HOST}:3000`;
 const CONFIG_WSURL = `ws://${CONFIG_API_HOST}:38080`;
 
 let cah_ws = null;
+const expectedApiVersion = {
+    major: 0,
+    minor: 0,
+    patch: 0
+};
 startTalking();
 
 $(document).ready(function(){
@@ -809,7 +814,7 @@ function sendWsMessage(action, payload) {
         return;
     }
     console.log(`Sending ${action}.`);
-    cah_ws.send(JSON.stringify({action: action, playerID: getPlayerID(), payload: payload}));
+    cah_ws.send(JSON.stringify({apiversion: expectedApiVersion, action: action, playerID: getPlayerID(), payload: payload}));
 }
 
 function handleWsMessage(incoming) {
