@@ -1,16 +1,10 @@
+import {GameStorage} from "./modules/gamestorage.js";
+import {CONFIG_WSURL, expectedApiVersion} from "./config.js";
 
-//set the base url for the various endpoints
-//all API calls will start with this URL, e.g., `${CONFIG_BASEURL}/v1/games/getGame`
-const CONFIG_API_HOST = "localhost";
-const CONFIG_BASEURL = `http://${CONFIG_API_HOST}:3000`;
-const CONFIG_WSURL = `ws://${CONFIG_API_HOST}:38080`;
 
 let cah_ws = null;
-const expectedApiVersion = {
-    major: 0,
-    minor: 0,
-    patch: 0
-};
+let storage = new GameStorage();
+
 startTalking();
 
 $(document).ready(function(){
@@ -18,16 +12,16 @@ $(document).ready(function(){
     $("#newGame").attr("disabled",true);
     sendWsMessage("getAllSetsRequest", {please: "pretty please"});
 
-    var gameID = getGameID();
-    if(!gameID || getGameOver()){
-        clearData();
+    let gameID = storage.getGameID();
+    if(!gameID || storage.getGameOver()){
+        storage.clearData();
     } else {
-        localStorage.setItem("lastcahgameid", gameID);
-        localStorage.removeItem("cahgameid");
+        storage.setLastGameID(gameID);
+        storage.delGameID("cahgameid");
         $("#nameForm").addClass("d-none");
         $("#continueGameForm").removeClass("d-none");
-        $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
-        $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
+        $("#displayPlayerName").html(storage.getPlayerName());
+        $("#namerow").html("Your name is <strong>" + storage.getPlayerName() + "</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
     }
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -57,11 +51,6 @@ function wsAllSets(sets) {
         $("#newGame").html("No sets available. Can't play without cards!");
     }
     $("#newGame").attr("disabled",false);
-}
-
-function todo_linkerrors() {
-    $("#nameError").removeClass("d-none");
-    $("#nameError").html("<i class='fas fa-plug'></i> Looks like the server is down... The game might not work.");
 }
 
 $(".copyGameID").on('click', function() {
@@ -119,12 +108,12 @@ $("#nameButton").on('click', function(){
         $("#nameError").removeClass("d-none");
         $("#nameError").html("Your name is too long. We're gonna need you to make that a little shorter mmkay?");
     } else {
-        localStorage.setItem("cahplayername",name);
+        storage.setPlayerName(name);
         $("#nameForm").addClass("d-none");
         $("#nameError").addClass("d-none");
         $("#newGameForm").removeClass("d-none");
-        $("#displayPlayerName").html(localStorage.getItem("cahplayername"));
-        $("#namerow").html("Your name is <strong>"+localStorage.getItem("cahplayername")+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
+        $("#displayPlayerName").html(storage.getPlayerName());
+        $("#namerow").html("Your name is <strong>"+storage.getPlayerName()+"</strong>. "+namearray[Math.floor(Math.random()*namearray.length)]);
         $("#game_name").val(name+"'s DeNCAH game");
     }
 });
@@ -154,7 +143,7 @@ $("#newGame").on('click', function(){
         var time_limit = $("#time_limit").val();
         var score_limit = $("#score_limit").val();
         var game_name = $("#game_name").val();
-        var playerName = localStorage.getItem("cahplayername");
+        var playerName = storage.getPlayerName();
         if (playerName.length == 0) {
             addToConsole("Player Name is required.");
         } else {
@@ -174,9 +163,9 @@ function wsCreate(create_data) {
     //$("#gameBoard").html("");
 
     addToConsole("Started new game: "+create_data.gameID);
-    setGameID(create_data.gameID);
+    storage.setGameID(create_data.gameID);
     addToConsole("Your player ID: "+create_data.players[0].id);//TODO: ID handling still seems problematic
-    setPlayerID(create_data.players[0].id);
+    storage.setPlayerID(create_data.players[0].id);
     updatePlayers(create_data.players, null);
     $(".gameIDtag").each(function (){
         $(this).html("Game Link:");
@@ -198,11 +187,11 @@ function wsCreate(create_data) {
                                 </div>
                             </div>
                         </div>`);
-    setOwnerID(create_data.ownerID);
+    storage.setOwnerID(create_data.ownerID);
 }
 
 $("#resetGame").on('click', function(){
-    clearData();
+    storage.clearData();
     $("#continueGameForm").addClass("d-none");
     $("#nameForm").removeClass("d-none");
     $("#selectionButtons").addClass("d-none");
@@ -225,19 +214,18 @@ $("#continueGame").on('click', function(){
                 </div>
             </div>
         </div>`);
-    var gameID = localStorage.getItem("lastcahgameid");
-    var playerID = localStorage.getItem("cahplayerid");
-    var player_name = localStorage.getItem("cahplayername");
-    localStorage.setItem("cahgameid",gameID);
-    localStorage.removeItem("cahround");
-    localStorage.removeItem("lastcahgameid");
+    var gameID = storage.getLastGameID();
+    var playerID = storage.getPlayerID();
+    storage.setGameID(gameID);
+    storage.delRound();
+    storage.delLastGameID();
 
     sendWsMessage("rejoinRequest", { gameID: gameID, playerID: playerID });
 });
 
 $("#joinGame").on('click', function(){
-    var playerName = localStorage.getItem("cahplayername");
-    var gameID = $("#gameID").val().trim();
+    let playerName = storage.getPlayerName();
+    let gameID = $("#gameID").val().trim();
     sendWsMessage("joinRequest", {gameID: gameID, playerName: playerName});
 });
 
@@ -245,9 +233,9 @@ function wsJoin(join_data) {
     $("#whiteHand").html("");
     $("#gameBoard").html("");
     addToConsole("Joined game ID: "+join_data.gameID);
-    setGameID(join_data.gameID);
+    storage.setGameID(join_data.gameID);
     updatePlayers(join_data.players, null);
-    localStorage.removeItem("round");
+    storage.delRound();
     $(".gameIDtag").each(function (){
         $(this).html("Game Link:");
         /*
@@ -275,11 +263,11 @@ function wsJoin(join_data) {
                         </div>
                     </div>
                 </div>`);
-    setOwnerID(join_data.owner);
+    storage.setOwnerID(join_data.owner);
 }
 
 $(".nextRound").on('click', function(){
-    var gameID = getGameID();
+    var gameID = storage.getGameID();
     sendWsMessage("startRound", { gameID: gameID });
     $("#nextRound").html("<i class='fas fa-angle-double-right'></i> Next Round <i class='fas fa-angle-double-right'></i>");
     $("#nextRound").addClass("d-none");
@@ -287,8 +275,8 @@ $(".nextRound").on('click', function(){
 });
 
 $("#mulliganConfirm").on('click', function() {
-    var playerID = getPlayerID();
-    var gameID = getGameID();
+    var playerID = storage.getPlayerID();
+    var gameID = storage.getGameID();
     sendWsMessage("mulligan", {
         playerID: playerID,
         gameID: gameID
@@ -313,7 +301,7 @@ $("#toggleFS").on('click', function(e){
 $("#kickButton").on('click', function(e){
     console.log("kick",$(this).attr('data-id'));
     var playerID = $(this).attr('data-id');
-    var gameID = getGameID();
+    var gameID = storage.getGameID();
     sendWsMessage("kickRequest",{
             gameID: gameID,
             kickeeID: playerID
@@ -340,9 +328,12 @@ $("#infoWhateverButton").on('click', function(e){
 
 
 function playerMenu(id,name) {
-    $("#playerOptionsName").html(name);
-    $("#kickButton").attr("data-id",id);
-    $('#playerOptions').modal('show');
+    console.log(`You clicked on ${name}. That's harassment.`);
+    if(storage.getPlayerID() === storage.getOwnerID()) {
+        $("#playerOptionsName").html(name);
+        $("#kickButton").attr("data-id", id);
+        $('#playerOptions').modal('show');
+    }
 }
 
 function toggleFullscreen(event) {
@@ -366,10 +357,10 @@ function toggleFullscreen(event) {
     }
 }
 
-function queueWhiteCard(cardID, blankCard){
-    var cards = getSubmitCards();
-    var localRound = getRound();
-    if(localRound.czar != getPlayerID()){
+export function queueWhiteCard(cardID, blankCard){
+    var cards = storage.getSubmitCards();
+    var localRound = storage.getRound();
+    if(localRound.czar !== storage.getPlayerID()){
         if(!cards || (cards.length < localRound.blackCard.pick && !cards.some(card => card == cardID))){
             $("#wc"+cardID).removeClass("bg-white");
             $("#wc"+cardID).removeClass("border-primary");
@@ -379,7 +370,7 @@ function queueWhiteCard(cardID, blankCard){
                 $("#blankCardID").val(cardID);
                 $('#blankCardModal').modal('show');
             } else {
-                setSubmitCards(cardID);
+                storage.setSubmitCards(cardID);
             }
         }
         enableConfirm();
@@ -389,7 +380,7 @@ function queueWhiteCard(cardID, blankCard){
 function queueCustomText(){
     var cardID = $("#blankCardID").val();
     var cardText = $("#blankCard").val();
-    setSubmitCards(cardID, cardText);
+    storage.setSubmitCards(cardID, cardText);
     $('#blankCardModal').modal('hide');
     $("#blankCardID").val("");
     $("#blankCard").val("");
@@ -397,8 +388,8 @@ function queueCustomText(){
 }
 
 function enableConfirm(){
-    var localRound = getRound();
-    var cards = getSubmitCards();
+    var localRound = storage.getRound();
+    var cards = storage.getSubmitCards();
     if(cards.length == localRound.blackCard.pick){
         $("#confirmSelection").attr("disabled",false);
         $("#mobileConfirmSelection").attr("disabled",false);
@@ -410,12 +401,12 @@ function enableConfirm(){
 function submitWhiteCards(){
     $("#selectionButtons").addClass("d-none");
     $("#mobileSelectionButtons").addClass("d-none");
-    var playerID = localStorage.getItem("cahplayerid");
-    var gameID = getGameID();
-    var localRound = getRound();
-    var cards = getSubmitCards();
+    var playerID = storage.getPlayerID();
+    var gameID = storage.getGameID();
+    var localRound = storage.getRound();
+    var cards = storage.getSubmitCards();
     var roundID = localRound.id;
-    //var czar = localStorage.getItem("cahczar");
+    //var czar = storage.getItem("cahczar");
     if(localRound.czar != playerID) {
         sendWsMessage("submitWhite", {
             gameID: gameID,
@@ -431,19 +422,20 @@ function wsHand(data)
 {
     addToConsole("Acquired your hand.");
     $("#whiteHand").html("");
-    var whiteHand = "";
     data.hand.forEach(function(card){
-        whiteHand = whiteHand +
+        let whiteCard =
             `<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                        <div id="wc${card.id}" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard('${card.id}','${card.blankCard}')">
+                        <div id="wc${card.id}" class="playerCard card bg-white whiteCard border border-primary" >
                             <div class="card-body">
                                 <p class="card-text">${card.text}</p>
                                 <span style="position: absolute; font-size:9px; bottom:5px; right:10px;"><i class="fas fa-layer-group"></i> ${card.set.name}</span>
                             </div>
                         </div>
                     </div>`;
+        $("#whiteHand").append(whiteCard);
+        document.getElementById(`wc${card.id}`).addEventListener('click', function() {queueWhiteCard(card.id, card.blankCard)});
     });
-    $("#whiteHand").html(whiteHand);
+
     if(data.mulligans > 0){
          $("#mulliganButton").removeClass('d-none');
     }
@@ -462,17 +454,37 @@ function updatePlayers(players, czar){
     $("#playerList").html("");
     $("#mobilePlayerList").html("");
     var playerList = "";
-    var playerID = getPlayerID();
-    var owner = getOwnerID();
+    var playerID = storage.getPlayerID();
+    var owner = storage.getOwnerID();
+
     players.forEach(function(player){
-        if(player.id == czar){
-            playerList += '<li class="player list-group-item active" '+(playerID == owner && player.id != owner ? 'onClick="playerMenu(\''+player.id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(player.id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-light float-right mr-1">'+player.points+'</span><span class="badge badge-info float-right mr-1"><i class="fas fa-gavel"></i></span></li>';
-        } else {
-            playerList += '<li class="player list-group-item" '+(playerID == owner && player.id != owner ? 'onClick="playerMenu(\''+player.id+'\',\''+player.name+'\')"' : '')+'>'+player.name+(!player.active ? '<i class="fas fa-user-clock"></i>' : '')+(player.id == owner ? '<i class="fas fa-crown ml-1"></i>' : '')+' <span class="badge badge-primary float-right">'+player.points+'</span></li>';
+        let playerListEntry = "";
+        if(player.id === czar){
+            playerListEntry = '<li class="player list-group-item active playerEntry' + player.id + '">'
+                    + player.name
+                    + (player.id === owner ? '<i class="fas fa-crown ml-1"></i>' : '')
+                    + ' <span class="badge badge-light float-right mr-1">'
+                    + player.points
+                    + '</span><span class="badge badge-info float-right mr-1"><i class="fas fa-gavel"></i></span></li>';
+
+        }
+        else {
+            playerListEntry = '<li class="player list-group-item playerEntry' + player.id + '">'
+                    + player.name
+                    + (!player.active ? '<i class="fas fa-user-clock"></i>' : '')
+                    + (player.id === owner ? '<i class="fas fa-crown ml-1"></i>' : '')
+                    + ' <span class="badge badge-primary float-right">' + player.points + '</span></li>';
+        }
+        $("#playerList").append(playerListEntry);
+        $("#mobilePlayerList").append(playerListEntry);
+
+        //we use class instead of ID because the list is duplicated in the mobile and non-mobile sections
+        let entries = document.getElementsByClassName(`playerEntry${player.id}`);
+        for(let e of entries) {
+            e.addEventListener('click', function() {playerMenu(player.id, player.name)});
         }
     });
-    $("#playerList").html(playerList);
-    $("#mobilePlayerList").html(playerList);
+
     $("#playerCount").html(players.length);
 }
 
@@ -487,26 +499,41 @@ function updateGameBoard(blackCard, whiteCards, status, winner = null){
                 </div>
             </div>
         </div>`;
-    var candidateCardsHtml = "";
+    $("#gameBoard").html("");
+    let candidateCardsHtml = "";
     whiteCards.forEach(function(candidateCard){
-        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder"><div class="playerCard card bg-white whiteCard '+(status == 'submit' ? 'whitePaper' : '')+' border border-primary" '+(status == 'submit' ? '' : 'onClick="selectCandidateCard(\''+candidateCard.player+'\')")')+'><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
-        var cardNum = 1;
+        candidateCardsHtml += '<div class="mb-4 mt-4 float-left candidateCardHolder">'
+                    + '<div class="playerCard card bg-white whiteCard '
+                    + (status == 'submit' ? 'whitePaper' : '') + ' border border-primary" '
+                    + 'id="playercard' + candidateCard.id + '"'
+                    + '><div class="card-body candidateCard" id="candidateCard'+candidateCard.player+'">';
+        let cardNum = 1;
         candidateCard.cards.forEach(function(card){
-            candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? '<span style="position: absolute; font-size:20px; bottom:10px; right:10px;"><i class="fas fa-clone"></i> DeNCAH</span>' : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
+            candidateCardsHtml += '<p class="card-text">'
+                    + ((status == 'submit') ? '<span style="position: absolute; font-size:20px; bottom:10px; right:10px;"><i class="fas fa-clone"></i> DeNCAH</span>'
+                        : (candidateCard.cards.length > 1
+                        ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')
+                    + card + (candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
             cardNum++;
         });
         candidateCardsHtml += ((candidateCard.winner) ? ' <span class="badge badge-success"><i class="fas fa-award fa-lg"></i> &nbsp;'+winner+'</span>' : '')+'</div></div></div>';
     });
     $("#blackCardHolder").html(blackCardHtml);
     $("#gameBoard").html(candidateCardsHtml);
-    var localRound = getRound();
+    whiteCards.forEach(function(candidateCard) {
+        document.getElementById(`playercard${candidateCard.id}`).addEventListener('click', function () {
+            selectCandidateCard(candidateCard.player)
+        });
+    });
+
+    var localRound = storage.getRound();
     $("#candidateCount").html(whiteCards.length.toString()+"/"+(localRound.players.length - 1).toString());
 }
 
 function selectCandidateCard(player){
-    var localRound = getRound();
-    var playerID = getPlayerID();
-    let gameID = getGameID();
+    var localRound = storage.getRound();
+    var playerID = storage.getPlayerID();
+    let gameID = storage.getGameID();
     if(localRound.czar == playerID){
         addToConsole("Selected Candidate Card.");
         sendWsMessage("selectCandidate", {
@@ -546,7 +573,7 @@ function shootConfetti()
 }
 
 function gameOver(name){
-    setGameOver();
+    storage.setGameOver();
     $("#gameDetails").html(name+" HAS WON THE GAME!");
     $("#nextRound").addClass("d-none");
     $("#mobileNextRound").addClass("d-none");
@@ -559,9 +586,9 @@ function gameOver(name){
 }
 
 function doGameUpdate(round){
-    var playerID = getPlayerID();
-    var gameID = getGameID();
-    var localRound = getRound();
+    var playerID = storage.getPlayerID();
+    var gameID = storage.getGameID();
+    var localRound = storage.getRound();
     if(round.game.winner){
         updateGameBoard(round.blackCard, round.candidateCards, round.status, round.winner.name || null);
         console.log("Game winner",round.game.winner.name);
@@ -578,7 +605,7 @@ function doGameUpdate(round){
         var changed = false;
         if(!localRound){
             console.log("Game started");
-            setRound(round);
+            storage.setRound(round);
             updateGameBoard(round.blackCard, round.candidateCards, round.status);
             updatePlayers(round.players, round.czar);
             if(round.czar != playerID){
@@ -649,8 +676,8 @@ function doGameUpdate(round){
             changed = true;
         }
         if(changed){
-            console.log("change... updating localStorage");
-            setRound(round);
+            console.log("change... updating storage");
+            storage.setRound(round);
             updatePlayers(round.players, round.czar);
         }
     }
@@ -675,99 +702,10 @@ function clearSelection(){
     });
     $("#confirmSelection").attr("disabled",true);
     $("#mobileConfirmSelection").attr("disabled",true);
-    localStorage.removeItem("cahsubmitcards");
-    localStorage.removeItem("cahczarselection");
+    storage.delSubmitCards();
+    storage.delCzarCard();
 }
 
-function getGameID(){
-    return localStorage.getItem("cahgameid");
-}
-
-function getOwnerID(){
-    return localStorage.getItem("cahownerid");
-}
-
-function getPlayerID(){
-    return localStorage.getItem("cahplayerid");
-}
-
-function getMulligans(){
-    return localStorage.getItem("cahmulligans");
-}
-
-function getRound(){
-    return JSON.parse(localStorage.getItem("cahround"));
-}
-
-function getSubmitCards(){
-    return JSON.parse(localStorage.getItem("cahsubmitcards"));
-}
-
-function getGameOver(){
-    return localStorage.getItem("cahgameover");
-}
-
-function setGameID(gameID){
-    localStorage.setItem("cahgameid", gameID);
-}
-
-function setPlayerID(playerID){
-    localStorage.setItem("cahplayerid", playerID);
-}
-
-function setMulligans(mulligans){
-    localStorage.setItem("cahmulligans", mulligans);
-}
-
-function setOwnerID(playerID){
-    localStorage.setItem("cahownerid", playerID);
-}
-
-function setRound(round){
-    localStorage.setItem("cahround",JSON.stringify(round));
-}
-
-function setGameOver(){
-    localStorage.setItem("cahgameover",true);
-}
-
-function setSubmitCards(cardID, cardText = ''){
-    var cards = getSubmitCards();
-    if(!cards){
-        cards = [
-            {
-                cardID: cardID,
-                cardText: cardText
-            }
-        ];
-    } else {
-        cards.push({
-            cardID: cardID,
-            cardText: cardText
-        });
-    }
-    localStorage.setItem("cahsubmitcards",JSON.stringify(cards));
-}
-
-function setCzarCard(card){
-    localStorage.setItem("cahczarselection",card);
-}
-
-function getCzarCard(){
-    return localStorage.getItem("cahczarselection");
-}
-
-function clearData()
-{
-    localStorage.removeItem("cahplayerid");
-    localStorage.removeItem("cahmulligans");
-    localStorage.removeItem("cahgameid");
-    localStorage.removeItem("cahround");
-    localStorage.removeItem("cahplayername");
-    localStorage.removeItem("cahsubmitcards");
-    localStorage.removeItem("cahgameover");
-    localStorage.removeItem("cahczarselection");
-}
 
 function startTalking() {
         $("#connectionText").html("Connecting to server...");
@@ -814,7 +752,7 @@ function sendWsMessage(action, payload) {
         return;
     }
     console.log(`Sending ${action}.`);
-    cah_ws.send(JSON.stringify({apiversion: expectedApiVersion, action: action, playerID: getPlayerID(), payload: payload}));
+    cah_ws.send(JSON.stringify({apiversion: expectedApiVersion, action: action, playerID: storage.getPlayerID(), payload: payload}));
 }
 
 function handleWsMessage(incoming) {
@@ -850,11 +788,11 @@ function handleWsMessage(incoming) {
                 case "round" :
                     console.log("Round message: " + JSON.stringify(data.payload));
                     doGameUpdate(data.payload);
-                    sendWsMessage("handRequest", {playerID: getPlayerID(), gameID: getGameID()});
+                    sendWsMessage("handRequest", {playerID: storage.getPlayerID(), gameID: storage.getGameID()});
                     break;
                 case "joinResponse" :
                     console.log("Join message: " + JSON.stringify(data.payload));
-                    setPlayerID(data.playerID);
+                    storage.setPlayerID(data.playerID);
                     wsJoin(data.payload);
                     break;
                 case "update":
@@ -868,7 +806,7 @@ function handleWsMessage(incoming) {
                 case "kickMessage":
                     console.log("Player kicked!");
                     updatePlayers(data.payload.players);
-                    if(data.payload.kickeeID === getPlayerID()) {
+                    if(data.payload.kickeeID === storage.getPlayerID()) {
                         $('#gotKicked').modal('show');
                     }
                     break;
