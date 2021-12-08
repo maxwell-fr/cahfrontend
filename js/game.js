@@ -36,21 +36,24 @@ $(document).ready(function(){
 
 });
 
-function wsAllSets(sets) {
-    sets.forEach(function(set){
+function uuiAllSets(sets) {
+    sets.forEach(function (set) {
         $("#options").append(`
                         <div class="custom-control custom-switch">
                             <input type="checkbox" class="set_switch custom-control-input" id="${set.id}" checked>
                             <label class="custom-control-label" for="${set.id}">${set.name} <span class="badge badge-dark">${set.blackCardCount}</span> <span class="badge badge-light">${set.whiteCardCount}</span></label>
                         </div>`);
     });
-    if(sets.length > 0){
+    if (sets.length > 0) {
         $("#newGame").html("Start it up!");
-    }
-    else {
+    } else {
         $("#newGame").html("No sets available. Can't play without cards!");
     }
-    $("#newGame").attr("disabled",false);
+    $("#newGame").attr("disabled", false);
+}
+
+function wsAllSets(sets) {
+    uuiAllSets(sets);
 }
 
 $(".copyGameID").on('click', function() {
@@ -158,19 +161,14 @@ $("#newGame").on('click', function(){
         }
     }
 });
-function wsCreate(create_data) {
+
+function uuiCreate(gameID) {
     $("#whiteHand").html("");
     //$("#gameBoard").html("");
-
-    addToConsole("Started new game: "+create_data.gameID);
-    storage.setGameID(create_data.gameID);
-    addToConsole("Your player ID: "+create_data.players[0].id);//TODO: ID handling still seems problematic
-    storage.setPlayerID(create_data.players[0].id);
-    updatePlayers(create_data.players, null);
-    $(".gameIDtag").each(function (){
+    $(".gameIDtag").each(function () {
         $(this).html("Game Link:");
-        $(".gameIDlink").each(function (){
-            $(this).val(window.location.href+"?id="+create_data.gameID);
+        $(".gameIDlink").each(function () {
+            $(this).val(window.location.href + "?id=" + gameID);
         });
         $(".gameIDgroup").removeClass("d-none");
     });
@@ -187,7 +185,16 @@ function wsCreate(create_data) {
                                 </div>
                             </div>
                         </div>`);
+}
+
+function wsCreate(create_data) {
+    addToConsole("Started new game: "+create_data.gameID);
+    storage.setGameID(create_data.gameID);
+    addToConsole("Your player ID: "+create_data.players[0].id);//TODO: ID handling still seems problematic
+    storage.setPlayerID(create_data.players[0].id);
+    updatePlayers(create_data.players, null);
     storage.setOwnerID(create_data.ownerID);
+    uuiCreate(create_data.gameID);
 }
 
 $("#resetGame").on('click', function(){
@@ -229,26 +236,22 @@ $("#joinGame").on('click', function(){
     sendWsMessage("joinRequest", {gameID: gameID, playerName: playerName});
 });
 
-function wsJoin(join_data) {
+function uuiJoin(gameID) {
     $("#whiteHand").html("");
     $("#gameBoard").html("");
-    addToConsole("Joined game ID: "+join_data.gameID);
-    storage.setGameID(join_data.gameID);
-    updatePlayers(join_data.players, null);
-    storage.delRound();
-    $(".gameIDtag").each(function (){
+    $(".gameIDtag").each(function () {
         $(this).html("Game Link:");
         /*
             If they joined via a gameID link we want to grab the URL up the the '?'
             then add the gameID to avoid the gameID being added on twice.
         */
-        if(window.location.href.indexOf("?") > 0){
+        if (window.location.href.indexOf("?") > 0) {
             $(".gameIDlink").each(function () {
-                $(this).val(window.location.href.substr(0,window.location.href.indexOf("?"))+"?id="+join_data.gameID);
+                $(this).val(window.location.href.substr(0, window.location.href.indexOf("?")) + "?id=" + gameID);
             });
         } else {
             $(".gameIDlink").each(function () {
-                $(this).val(window.location.href+"?id="+join_data.gameID);
+                $(this).val(window.location.href + "?id=" + gameID);
             });
         }
         $(".gameIDgroup").removeClass("d-none");
@@ -263,7 +266,16 @@ function wsJoin(join_data) {
                         </div>
                     </div>
                 </div>`);
+}
+
+function wsJoin(playerID, join_data) {
+    storage.setPlayerID(playerID);
+    addToConsole("Joined game ID: "+join_data.gameID);
+    storage.setGameID(join_data.gameID);
+    updatePlayers(join_data.players, null);
+    storage.delRound();
     storage.setOwnerID(join_data.owner);
+    uuiJoin(join_data.gameID);
 }
 
 $(".nextRound").on('click', function(){
@@ -418,11 +430,10 @@ function submitWhiteCards(){
     clearSelection();
 }
 
-function wsHand(data)
-{
+function uuiHand(hand) {
     addToConsole("Acquired your hand.");
     $("#whiteHand").html("");
-    data.hand.forEach(function(card){
+    hand.forEach(function (card) {
         let whiteCard =
             `<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div id="wc${card.id}" class="playerCard card bg-white whiteCard border border-primary" >
@@ -433,16 +444,21 @@ function wsHand(data)
                         </div>
                     </div>`;
         $("#whiteHand").append(whiteCard);
-        document.getElementById(`wc${card.id}`).addEventListener('click', function() {queueWhiteCard(card.id, card.blankCard)});
+        document.getElementById(`wc${card.id}`).addEventListener('click', function () {
+            queueWhiteCard(card.id, card.blankCard)
+        });
     });
 
-    if(data.mulligans > 0){
-         $("#mulliganButton").removeClass('d-none');
-    }
-    else {
+    if (data.mulligans > 0) {
+        $("#mulliganButton").removeClass('d-none');
+    } else {
         $("#mulliganButton").addClass('d-none');
     }
+}
 
+function wsHand(data)
+{
+    uuiHand(data.hand);
 }
 
 function addToConsole(text){
@@ -558,9 +574,17 @@ function selectCandidateCard(player){
     }
 }
 
+function celebrate() {
+    shootConfetti();
+    setTimeout(shootConfetti, 500);
+    setTimeout(shootConfetti, 1000);
+    setTimeout(shootConfetti, 1500);
+    setTimeout(shootConfetti, 2000);
+}
+
 function shootConfetti()
 {
-    confetti({
+    const confetti_config = {
         particleCount: 100,
         startVelocity: 30,
         spread: 360,
@@ -569,7 +593,9 @@ function shootConfetti()
             // since they fall down, start a bit higher than random
             y: Math.random() - 0.2
         }
-    });
+    };
+
+    confetti(confetti_config);
 }
 
 function gameOver(name){
@@ -583,6 +609,7 @@ function gameOver(name){
     $("#winnerDisplay").html('<i class="fas fa-trophy"></i> '+name+" HAS WON THE GAME! "+'<i class="fas fa-trophy"></i>');
     $("#mobileWinnerDisplay").removeClass("d-none");
     $("#mobileWinnerDisplay").html('<i class="fas fa-trophy"></i> '+name+" HAS WON THE GAME! "+'<i class="fas fa-trophy"></i>');
+    document.getElementById("winnerDisplay").addEventListener("click", celebrate);
 }
 
 function doGameUpdate(round){
@@ -755,6 +782,36 @@ function sendWsMessage(action, payload) {
     cah_ws.send(JSON.stringify({apiversion: expectedApiVersion, action: action, playerID: storage.getPlayerID(), payload: payload}));
 }
 
+function uuiInfo(data) {
+    $("#infotext").html(data.payload);
+    $("#infobox").modal("show");
+}
+
+function uuiError(data) {
+    $("#errortext").html(data.payload);
+    $("#errorbox").modal("show");
+}
+
+function uuiGameResponse(data) {
+    $("#joinGameText").html("You've been invited to a game called " + data.payload.name + ". Lucky you!");
+}
+
+function wsRound(data) {
+    doGameUpdate(data.payload);
+    sendWsMessage("handRequest", {playerID: storage.getPlayerID(), gameID: storage.getGameID()});
+}
+
+function wsUpdate(data) {
+    updatePlayers(data.payload.players);
+}
+
+function wsKick(data) {
+    updatePlayers(data.payload.players);
+    if (data.payload.kickeeID === storage.getPlayerID()) {
+        $('#gotKicked').modal('show');
+    }
+}
+
 function handleWsMessage(incoming) {
     try {
         const data = JSON.parse(incoming.data);
@@ -765,13 +822,11 @@ function handleWsMessage(incoming) {
             switch(data.action) {
                 case "info" :
                     console.log("Server says: " + JSON.stringify(data.payload));
-                    $("#infotext").html(data.payload);
-                    $("#infobox").modal("show");
+                    uuiInfo(data);
                     break;
                 case "error":
                     console.log("Error: " + JSON.stringify(data.payload));
-                    $("#errortext").html(data.payload);
-                    $("#errorbox").modal("show");
+                    uuiError(data);
                     break;
                 case "getAllSetsResponse":
                     console.log("All sets message:" + JSON.stringify(data.payload));
@@ -779,7 +834,7 @@ function handleWsMessage(incoming) {
                     break;
                 case "getGameResponse":
                     console.log("Get game message: " + JSON.stringify(data.payload));
-                    $("#joinGameText").html("You've been invited to a game called "+data.payload.name+". Lucky you!");
+                    uuiGameResponse(data);
                     break;
                 case "createResponse" :
                     console.log("Create message: " + JSON.stringify(data.payload));
@@ -787,17 +842,15 @@ function handleWsMessage(incoming) {
                     break;
                 case "round" :
                     console.log("Round message: " + JSON.stringify(data.payload));
-                    doGameUpdate(data.payload);
-                    sendWsMessage("handRequest", {playerID: storage.getPlayerID(), gameID: storage.getGameID()});
+                    wsRound(data);
                     break;
                 case "joinResponse" :
                     console.log("Join message: " + JSON.stringify(data.payload));
-                    storage.setPlayerID(data.playerID);
-                    wsJoin(data.payload);
+                    wsJoin(data.playerID, data.payload);
                     break;
                 case "update":
                     console.log("Update message: " + JSON.stringify(data.payload));
-                    updatePlayers(data.payload.players);
+                    wsUpdate(data);
                     break;
                 case "handResponse":
                     console.log("Hand message: " + JSON.stringify(data.payload));
@@ -805,10 +858,7 @@ function handleWsMessage(incoming) {
                     break;
                 case "kickMessage":
                     console.log("Player kicked!");
-                    updatePlayers(data.payload.players);
-                    if(data.payload.kickeeID === storage.getPlayerID()) {
-                        $('#gotKicked').modal('show');
-                    }
+                    wsKick(data);
                     break;
                 default:
                     console.log("Other message:" + JSON.stringify(data));
