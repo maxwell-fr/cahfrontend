@@ -5,8 +5,10 @@ export const CONFIG_BASEURL = `http://${CONFIG_API_HOST}:3000`;
 export const CONFIG_WSURL = `ws://${CONFIG_API_HOST}:38080`;
 
 //This client works with this version of the server API
-export const expectedApiVersion = {
+export const EXPECTED_API_VERSION = {
     major: 0,
     minor: 0,
     patch: 0
 };
+
+export const WS_RETRY_DELAY_MS = 2000;
