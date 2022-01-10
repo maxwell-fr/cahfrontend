@@ -1,4 +1,4 @@
-import {CONFIG_WSURL, EXPECTED_API_VERSION, WS_RETRY_DELAY_MS} from "../config.js";
+import {CONFIG_WSURL, EXPECTED_API_VERSION, WS_PING_RATE_MS, WS_RETRY_DELAY_MS} from "../config.js";
 
 
 export class WS_Client {
@@ -27,6 +27,9 @@ export class WS_Client {
         this.ui = uiInterface;
 
         this.socket = new WebSocket(CONFIG_WSURL);
+
+        this.lastTime = Date.now();
+        this.heartbeatInterval = WS_PING_RATE_MS;
 
         this.startTalking()
     }
@@ -61,7 +64,27 @@ export class WS_Client {
             console.log("Connection error.");
             //just note the error; onclose will try to reconnect
         };
+
+        this._keepAlive = function () {
+            myself.checkPingNeeded();
+        }
+        this.heartbeatIntervalID = setInterval(this._keepAlive, 1000);
     }
+
+    updateLastTalkTime() {
+        this.lastTime = Date.now();
+    }
+
+    checkPingNeeded() {
+        if(Date.now() - this.lastTime > this.heartbeatInterval) {
+            this.pingServer();
+        }
+    }
+
+    pingServer() {
+        this.sendWsMessage("ping", {ping: "ping?"});
+    }
+
 
     wsAllSets(sets) {
         this.ui.uuiAllSets(sets);
@@ -111,6 +134,7 @@ export class WS_Client {
             playerID: this.storage.getPlayerID(),
             payload: payload
         }));
+        this.updateLastTalkTime();
     }
 
     submitWhiteCards(){
@@ -151,6 +175,9 @@ export class WS_Client {
     handleWsMessage(incoming) {
         try {
             const data = JSON.parse(incoming.data);
+            if(data.pingT !== undefined) {
+                this.heartbeatInterval = data.pingT;
+            }
             if (data.action === undefined) {
                 console.log("Actionless server message: " + incoming.data);
             } else {
@@ -195,10 +222,14 @@ export class WS_Client {
                         console.log("Player kicked!");
                         this.wsKick(data);
                         break;
+                    case "pong":
+                        console.log("Pong!");
+                        break;
                     default:
                         console.log("Other message:" + JSON.stringify(data));
                 }
             }
+            this.updateLastTalkTime();
         } catch (e) {
             console.log("ws message handler caught something: " + e);
         }

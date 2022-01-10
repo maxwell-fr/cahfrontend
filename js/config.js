@@ -12,3 +12,5 @@ export const EXPECTED_API_VERSION = {
 };
 
 export const WS_RETRY_DELAY_MS = 2000;
+
+export const WS_PING_RATE_MS = 20000;
