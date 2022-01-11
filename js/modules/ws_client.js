@@ -120,7 +120,7 @@ export class WS_Client {
 
     sendWsMessage(action, payload) {
         const myself = this;
-        if (this.socket.readyState !== 1) {
+        if (this.socket.readyState !== 1 && action !== "ping") {
             setTimeout( function () {
                 myself.sendWsMessage(action, payload, true)
             }, WS_RETRY_DELAY_MS);
