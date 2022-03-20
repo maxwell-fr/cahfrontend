@@ -1,7 +1,12 @@
+//set the base url for the various endpoints
+//all API calls will start with this URL, e.g., `${CONFIG_BASEURL}/v1/games/getGame`
+//https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllSets
+const CONFIG_BASEURL = "http://localhost:3000";
+
 $(document).ready(function(){
     try {
         $.ajax({
-            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllSets",
+            url: `${CONFIG_BASEURL}/v1/games/getAllSets`,
             method: "GET",
             data: {
                 //gameID: gameID
@@ -47,7 +52,7 @@ $(document).ready(function(){
         $("#collapseTwo").addClass("show");
         $("#gameID").val(vars.id);
         $.ajax({
-            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getGame",
+            url: `${CONFIG_BASEURL}/v1/games/getGame`,
             method: "POST",
             data: {
                 gameID: vars.id
@@ -94,7 +99,7 @@ setInterval(function(){
         $("#gameDetails").removeClass("d-none");
         if(!getRound()){
             $.ajax({
-                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getGame",
+                url: `${CONFIG_BASEURL}/v1/games/getGame`,
                 method: "POST",
                 data: {
                     gameID: gameID
@@ -185,7 +190,7 @@ $("#newGame").on('click', function(){
             addToConsole("Player Name is required.");
         } else {
             $.ajax({
-                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/new",
+                url: `${CONFIG_BASEURL}/v1/games/new`,
                 method: "POST",
                 data: {
                     player: playerName,
@@ -262,7 +267,7 @@ $("#joinGame").on('click', function(){
     var playerName = localStorage.getItem("cahplayername");
     var gameID = $("#gameID").val().trim();
     $.ajax({
-        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/join",
+        url: `${CONFIG_BASEURL}/v1/games/join`,
         method: "POST",
         data: {
             player: playerName,
@@ -312,7 +317,7 @@ $("#joinGame").on('click', function(){
 $(".nextRound").on('click', function(){
     var gameID = getGameID();
     $.ajax({
-        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/startRound",
+        url: `${CONFIG_BASEURL}/v1/games/startRound`,
         method: "POST",
         data: {
             gameID: gameID
@@ -331,7 +336,7 @@ $("#mulliganConfirm").on('click', function(){
     var playerID = getPlayerID();
     var gameID = getGameID();
     $.ajax({
-        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/mulligan",
+        url: `${CONFIG_BASEURL}/v1/games/mulligan`,
         method: "POST",
         data: {
             playerID: playerID,
@@ -368,7 +373,7 @@ $("#kickButton").on('click', function(e){
     var playerID = $(this).attr('data-id');
     var gameID = getGameID();
     $.ajax({
-        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/removePlayer",
+        url: `${CONFIG_BASEURL}/v1/games/removePlayer`,
         method: "POST",
         data: {
             gameID: gameID,
@@ -459,7 +464,7 @@ function submitWhiteCards(){
     var roundID = localRound._id;
     if(localRound.czar != playerID){
         $.ajax({
-            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/submitWhiteCard",
+            url: `${CONFIG_BASEURL}/v1/games/submitWhiteCard`,
             method: "POST",
             data: {
                 roundID: roundID,
@@ -475,7 +480,7 @@ function submitWhiteCards(){
         var czarCard = getCzarCard();
         if(czarCard){
             $.ajax({
-                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/selectCandidateCard",
+                url: `${CONFIG_BASEURL}/v1/games/selectCandidateCard`,
                 method: "POST",
                 data: {
                     roundID: localRound._id,
@@ -497,7 +502,7 @@ function submitWhiteCards(){
 function getHand(){
     var playerID = getPlayerID();
     $.ajax({
-        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getHand",
+        url: `${CONFIG_BASEURL}/v1/games/getHand`,
         method: "POST",
         data: {
             playerID: playerID
@@ -530,7 +535,7 @@ function addToConsole(text){
 
 function getLatestRound(gameID){
     $.ajax({
-        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getLatestRound",
+        url: `${CONFIG_BASEURL}/v1/games/getLatestRound`,
         method: "POST",
         data: {
             gameID: gameID
