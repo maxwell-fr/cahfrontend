@@ -204,6 +204,7 @@ $("#newGame").on('click', function(){
                     setGameID(result.data.gameID);
                     addToConsole("Your player ID: "+result.data.players[0]._id);
                     setPlayerID(result.data.players[0]._id);
+                    setPlayerToken(result.data.players[0].token)
                     updatePlayers(result.data.players, null);
                     $(".gameIDtag").each(function (){
                         $(this).html("Game Link:");
@@ -761,6 +762,10 @@ function getPlayerID(){
     return localStorage.getItem("cahplayerid");
 }
 
+function getPlayerToken(){
+    return localStorage.getItem("cahplayertoken");
+}
+
 function getMulligans(){
     return localStorage.getItem("cahmulligans");
 }
@@ -783,6 +788,10 @@ function setGameID(gameID){
 
 function setPlayerID(playerID){
     localStorage.setItem("cahplayerid", playerID);
+}
+
+function setPlayerToken(playerToken){
+    localStorage.setItem("cahplayertoken", playerToken);
 }
 
 function setMulligans(mulligans){
@@ -830,6 +839,7 @@ function getCzarCard(){
 function clearData()
 {
     localStorage.removeItem("cahplayerid");
+    localStorage.removeItem("cahplayertoken");
     localStorage.removeItem("cahmulligans");
     localStorage.removeItem("cahgameid");
     localStorage.removeItem("cahround");
