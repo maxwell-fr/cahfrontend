@@ -1,12 +1,7 @@
-//set the base url for the various endpoints
-//all API calls will start with this URL, e.g., `${CONFIG_BASEURL}/v1/games/getGame`
-//https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllSets
-const CONFIG_BASEURL = "http://localhost:3000";
-
 $(document).ready(function(){
     try {
         $.ajax({
-            url: `${CONFIG_BASEURL}/v1/games/getAllSets`,
+            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getAllSets",
             method: "GET",
             data: {
                 //gameID: gameID
@@ -52,7 +47,7 @@ $(document).ready(function(){
         $("#collapseTwo").addClass("show");
         $("#gameID").val(vars.id);
         $.ajax({
-            url: `${CONFIG_BASEURL}/v1/games/getGame`,
+            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getGame",
             method: "POST",
             data: {
                 gameID: vars.id
@@ -99,7 +94,7 @@ setInterval(function(){
         $("#gameDetails").removeClass("d-none");
         if(!getRound()){
             $.ajax({
-                url: `${CONFIG_BASEURL}/v1/games/getGame`,
+                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getGame",
                 method: "POST",
                 data: {
                     gameID: gameID
@@ -190,7 +185,7 @@ $("#newGame").on('click', function(){
             addToConsole("Player Name is required.");
         } else {
             $.ajax({
-                url: `${CONFIG_BASEURL}/v1/games/new`,
+                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/new",
                 method: "POST",
                 data: {
                     player: playerName,
@@ -204,7 +199,6 @@ $("#newGame").on('click', function(){
                     setGameID(result.data.gameID);
                     addToConsole("Your player ID: "+result.data.players[0]._id);
                     setPlayerID(result.data.players[0]._id);
-                    setPlayerToken(result.data.players[0].token)
                     updatePlayers(result.data.players, null);
                     $(".gameIDtag").each(function (){
                         $(this).html("Game Link:");
@@ -268,7 +262,7 @@ $("#joinGame").on('click', function(){
     var playerName = localStorage.getItem("cahplayername");
     var gameID = $("#gameID").val().trim();
     $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/join`,
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/join",
         method: "POST",
         data: {
             player: playerName,
@@ -318,7 +312,7 @@ $("#joinGame").on('click', function(){
 $(".nextRound").on('click', function(){
     var gameID = getGameID();
     $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/startRound`,
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/startRound",
         method: "POST",
         data: {
             gameID: gameID
@@ -337,7 +331,7 @@ $("#mulliganConfirm").on('click', function(){
     var playerID = getPlayerID();
     var gameID = getGameID();
     $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/mulligan`,
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/mulligan",
         method: "POST",
         data: {
             playerID: playerID,
@@ -374,7 +368,7 @@ $("#kickButton").on('click', function(e){
     var playerID = $(this).attr('data-id');
     var gameID = getGameID();
     $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/removePlayer`,
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/removePlayer",
         method: "POST",
         data: {
             gameID: gameID,
@@ -465,7 +459,7 @@ function submitWhiteCards(){
     var roundID = localRound._id;
     if(localRound.czar != playerID){
         $.ajax({
-            url: `${CONFIG_BASEURL}/v1/games/submitWhiteCard`,
+            url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/submitWhiteCard",
             method: "POST",
             data: {
                 roundID: roundID,
@@ -481,7 +475,7 @@ function submitWhiteCards(){
         var czarCard = getCzarCard();
         if(czarCard){
             $.ajax({
-                url: `${CONFIG_BASEURL}/v1/games/selectCandidateCard`,
+                url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/selectCandidateCard",
                 method: "POST",
                 data: {
                     roundID: localRound._id,
@@ -503,7 +497,7 @@ function submitWhiteCards(){
 function getHand(){
     var playerID = getPlayerID();
     $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/getHand`,
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getHand",
         method: "POST",
         data: {
             playerID: playerID
@@ -536,7 +530,7 @@ function addToConsole(text){
 
 function getLatestRound(gameID){
     $.ajax({
-        url: `${CONFIG_BASEURL}/v1/games/getLatestRound`,
+        url: "https://dencah-deviler151532041.codeanyapp.com/v1/games/getLatestRound",
         method: "POST",
         data: {
             gameID: gameID
@@ -585,7 +579,7 @@ function updateGameBoard(blackCard, whiteCards, status, winner = null){
             candidateCardsHtml += '<p class="card-text">'+((status == 'submit') ? '<span style="position: absolute; font-size:20px; bottom:10px; right:10px;"><i class="fas fa-clone"></i> DeNCAH</span>' : (candidateCard.cards.length > 1 ? '<span class="badge badge-secondary mr-1">'+cardNum+'</span>':'')+card+(candidateCard.cards.length > 1 && candidateCard.cards.length > cardNum ? '<hr/>':''))+'</p>';
             cardNum++;
         });
-        candidateCardsHtml += ((candidateCard.winner) ? ' <span class="badge badge-success"><i class="fas fa-award fa-lg"></i> &nbsp;'+winner+'</span>' : '')+'</div></div></div>';
+        candidateCardsHtml += ((candidateCard.winner) ? ' <span class="badge badge-success"><i class="fas fa-award fa-lg"></i>  '+winner+'</span>' : '')+'</div></div></div>';
     });
     $("#blackCardHolder").html(blackCardHtml);
     $("#gameBoard").html(candidateCardsHtml);
@@ -762,10 +756,6 @@ function getPlayerID(){
     return localStorage.getItem("cahplayerid");
 }
 
-function getPlayerToken(){
-    return localStorage.getItem("cahplayertoken");
-}
-
 function getMulligans(){
     return localStorage.getItem("cahmulligans");
 }
@@ -788,10 +778,6 @@ function setGameID(gameID){
 
 function setPlayerID(playerID){
     localStorage.setItem("cahplayerid", playerID);
-}
-
-function setPlayerToken(playerToken){
-    localStorage.setItem("cahplayertoken", playerToken);
 }
 
 function setMulligans(mulligans){
@@ -839,7 +825,6 @@ function getCzarCard(){
 function clearData()
 {
     localStorage.removeItem("cahplayerid");
-    localStorage.removeItem("cahplayertoken");
     localStorage.removeItem("cahmulligans");
     localStorage.removeItem("cahgameid");
     localStorage.removeItem("cahround");
