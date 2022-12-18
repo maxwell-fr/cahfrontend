@@ -74,10 +74,9 @@ $(".copyGameID").on('click', function() {
     copyText.setSelectionRange(0, 99999); /*For mobile devices*/
 
     /* Copy the text inside the text field */
-    document.execCommand("copy");
+    navigator.clipboard.writeText(copyText.value);
 
     /* Alert the copied text */
-    console.log("Copied the text: " + copyText.value);
     $(this).attr('title','Copied!');
     $(this).tooltip('show');
 });
