@@ -417,7 +417,7 @@ function queueWhiteCard(cardID, blankCard){
     var cards = getSubmitCards();
     var localRound = getRound();
     if(localRound.czar != getPlayerID()){
-        if(!cards || (cards.length < localRound.blackCard.pick && !cards.some(card => card == cardID))){
+        if(!cards || (cards.length < localRound.blackCard.pick && !cards.some(card => card.cardID == cardID))){
             $("#wc"+cardID).removeClass("bg-white");
             $("#wc"+cardID).removeClass("border-primary");
             $("#wc"+cardID).addClass("bg-primary");
