@@ -2,7 +2,7 @@
 //all API calls will start with this URL, e.g., `${CONFIG_BASEURL}/v1/games/getGame`
 //https://dencah-deviler151532041.codeanyapp.com
 //http://localhost:3000
-const CONFIG_BASEURL = "https://dencah-deviler151532041.codeanyapp.com";
+const CONFIG_BASEURL = "http://localhost:3000";
 
 $(document).ready(function(){
     try {
@@ -202,8 +202,9 @@ $("#newGame").on('click', function(){
                 success: function( result ) {
                     addToConsole("Started new game: "+result.data.gameID);
                     setGameID(result.data.gameID);
-                    addToConsole("Your player ID: "+result.data.players[0]._id);
-                    setPlayerID(result.data.players[0]._id);
+                    addToConsole("Your player ID: "+result.data.playerID);
+                    addToConsole("Your player guid: "+result.data.guid);
+                    setPlayerID(result.data.playerID);
                     updatePlayers(result.data.players, null);
                     $(".gameIDtag").each(function (){
                         $(this).html("Game Link:");
@@ -761,6 +762,10 @@ function getPlayerID(){
     return localStorage.getItem("cahplayerid");
 }
 
+function getGuid(){
+    return localStorage.getItem("cahguid");
+}
+
 function getMulligans(){
     return localStorage.getItem("cahmulligans");
 }
@@ -783,6 +788,10 @@ function setGameID(gameID){
 
 function setPlayerID(playerID){
     localStorage.setItem("cahplayerid", playerID);
+}
+
+function setGUID(guid){
+    localStorage.setItem("cahguid", guid);
 }
 
 function setMulligans(mulligans){
@@ -830,6 +839,7 @@ function getCzarCard(){
 function clearData()
 {
     localStorage.removeItem("cahplayerid");
+    localStorage.removeItem("cahguid");
     localStorage.removeItem("cahmulligans");
     localStorage.removeItem("cahgameid");
     localStorage.removeItem("cahround");
