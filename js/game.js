@@ -333,12 +333,15 @@ $(".nextRound").on('click', function(){
 $("#mulliganConfirm").on('click', function(){
     var playerID = getPlayerID();
     var gameID = getGameID();
+    var guid = getGuid();
+
     $.ajax({
         url: `${CONFIG_BASEURL}/v1/games/mulligan`,
         method: "POST",
         data: {
             playerID: playerID,
-            gameID: gameID
+            gameID: gameID,
+            guid: guid
         },
         success: function( result ) {
             console.log(result.data);
@@ -503,11 +506,13 @@ function submitWhiteCards(){
 
 function getHand(){
     var playerID = getPlayerID();
+    var guid = getGuid();
     $.ajax({
         url: `${CONFIG_BASEURL}/v1/games/getHand`,
         method: "POST",
         data: {
-            playerID: playerID
+            playerID: playerID,
+            guid: guid
         },
         success: function( result ) {
             $("#whiteHand").html("");
