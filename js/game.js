@@ -200,10 +200,9 @@ $("#newGame").on('click', function(){
                     name: game_name
                 },
                 success: function( result ) {
-                    addToConsole("Started new game: "+result.data.gameID);
                     setGameID(result.data.gameID);
-                    addToConsole("Your player ID: "+result.data.players[0]._id);
-                    setPlayerID(result.data.players[0]._id);
+                    setPlayerID(result.data.playerID);
+                    setGUID(result.data.guid);
                     updatePlayers(result.data.players, null);
                     $(".gameIDtag").each(function (){
                         $(this).html("Game Link:");
@@ -276,10 +275,9 @@ $("#joinGame").on('click', function(){
         success: function( result ) {
             $("#whiteHand").html("");
             $("#gameBoard").html("");
-            addToConsole("Joined game ID: "+result.data.gameID);
             setGameID(result.data.gameID);
-            addToConsole("player ID: "+result.data.players[result.data.players.length-1]._id);
-            setPlayerID(result.data.players[result.data.players.length-1]._id);
+            setPlayerID(result.data.playerID);
+            setGUID(result.data.guid);
             updatePlayers(result.data.players, null);
             localStorage.removeItem("round");
             $(".gameIDtag").each(function (){
@@ -335,12 +333,15 @@ $(".nextRound").on('click', function(){
 $("#mulliganConfirm").on('click', function(){
     var playerID = getPlayerID();
     var gameID = getGameID();
+    var guid = getGuid();
+
     $.ajax({
         url: `${CONFIG_BASEURL}/v1/games/mulligan`,
         method: "POST",
         data: {
             playerID: playerID,
-            gameID: gameID
+            gameID: gameID,
+            guid: guid
         },
         success: function( result ) {
             console.log(result.data);
@@ -462,6 +463,7 @@ function submitWhiteCards(){
     var localRound = getRound();
     var cards = getSubmitCards();
     var roundID = localRound._id;
+    var guid = getGuid();
     if(localRound.czar != playerID){
         $.ajax({
             url: `${CONFIG_BASEURL}/v1/games/submitWhiteCard`,
@@ -469,7 +471,8 @@ function submitWhiteCards(){
             data: {
                 roundID: roundID,
                 whiteCards: cards,
-                playerID: playerID
+                playerID: playerID,
+                guid: guid
             },
             success: function( result ) {
                 doGameUpdate(result.data);
@@ -484,7 +487,9 @@ function submitWhiteCards(){
                 method: "POST",
                 data: {
                     roundID: localRound._id,
-                    player: czarCard
+                    player: czarCard,
+                    playerID: playerID,
+                    guid: guid
                 },
                 success: function( result ) {
                     updatePlayers(result.data.players, result.data.czar);
@@ -501,11 +506,13 @@ function submitWhiteCards(){
 
 function getHand(){
     var playerID = getPlayerID();
+    var guid = getGuid();
     $.ajax({
         url: `${CONFIG_BASEURL}/v1/games/getHand`,
         method: "POST",
         data: {
-            playerID: playerID
+            playerID: playerID,
+            guid: guid
         },
         success: function( result ) {
             $("#whiteHand").html("");
@@ -761,6 +768,10 @@ function getPlayerID(){
     return localStorage.getItem("cahplayerid");
 }
 
+function getGuid(){
+    return localStorage.getItem("cahguid");
+}
+
 function getMulligans(){
     return localStorage.getItem("cahmulligans");
 }
@@ -783,6 +794,10 @@ function setGameID(gameID){
 
 function setPlayerID(playerID){
     localStorage.setItem("cahplayerid", playerID);
+}
+
+function setGUID(guid){
+    localStorage.setItem("cahguid", guid);
 }
 
 function setMulligans(mulligans){
@@ -830,6 +845,7 @@ function getCzarCard(){
 function clearData()
 {
     localStorage.removeItem("cahplayerid");
+    localStorage.removeItem("cahguid");
     localStorage.removeItem("cahmulligans");
     localStorage.removeItem("cahgameid");
     localStorage.removeItem("cahround");
