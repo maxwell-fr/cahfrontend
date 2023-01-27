@@ -184,6 +184,7 @@ $("#newGame").on('click', function(){
         var time_limit = $("#time_limit").val();
         var score_limit = $("#score_limit").val();
         var game_name = $("#game_name").val();
+        var hand_size = $("#hand_size").val();
         $("#whiteHand").html("");
         var playerName = localStorage.getItem("cahplayername");
         if(playerName.length == 0){
@@ -197,7 +198,8 @@ $("#newGame").on('click', function(){
                     sets: sets,
                     time_limit: time_limit,
                     score_limit: score_limit,
-                    name: game_name
+                    name: game_name,
+                    handSize: hand_size
                 },
                 success: function( result ) {
                     setGameID(result.data.gameID);
@@ -519,7 +521,7 @@ function getHand(){
             var whiteHand = "";
             result.data.hand.forEach(function(card){
                 whiteHand = whiteHand + 
-                    `<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                    `<div class="mb-1 mt-1 mr-2 float-left wc_wrapper">
                         <div id="wc${card._id}" class="playerCard card bg-white whiteCard border border-primary" onClick="queueWhiteCard('${card._id}','${card.blankCard}')">
                             <div class="card-body">
                                 <p class="card-text">${card.text}</p>
