@@ -2,7 +2,7 @@
 //all API calls will start with this URL, e.g., `${CONFIG_BASEURL}/v1/games/getGame`
 //https://dencah-deviler151532041.codeanyapp.com
 //http://localhost:3000
-const CONFIG_BASEURL = "https://dencah-deviler151532041.codeanyapp.com";
+const CONFIG_BASEURL = "http://localhost:3000";
 
 $(document).ready(function(){
     try {
@@ -660,10 +660,10 @@ function doGameUpdate(round){
     } else {
         if(localRound){
             $(".whiteCardCount").each(function(){
-                $(this).html("<span class='badge badge-light border' style='background-color: #fff;'><i class='fas fa-layer-group'></i> "+round.game.whiteCards.length+"</span>");
+                $(this).html("<span class='badge badge-light border' style='background-color: #fff;'><i class='fas fa-layer-group'></i> "+round.game.whiteRemaining+"</span>");
             });
             $(".blackCardCount").each(function(){
-                $(this).html("<span class='badge badge-dark border'><i class='fas fa-layer-group'></i> "+round.game.blackCards.length+"</span>");
+                $(this).html("<span class='badge badge-dark border'><i class='fas fa-layer-group'></i> "+round.game.blackRemaining+"</span>");
             });
         }
         var changed = false;
